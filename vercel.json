@@ -1,0 +1,9 @@
+{
+  "buildCommand": "prisma generate && prisma migrate deploy && next build",
+  "framework": "nextjs",
+  "functions": {
+    "src/app/api/webhooks/**": {
+      "maxDuration": 30
+    }
+  }
+}

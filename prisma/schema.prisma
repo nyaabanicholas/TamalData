@@ -1,0 +1,266 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id             String              @id @default(cuid())
+  authId         String?             @unique
+  name           String
+  phone          String              @unique
+  email          String?             @unique
+  passwordHash   String
+  role           Role                @default(USER)
+  resellerStatus ResellerStatus?
+  walletBalance  Decimal             @default(0) @db.Decimal(10, 2)
+  referralCode   String              @unique
+  referredById   String?
+  referredBy     User?               @relation("Referrals", fields: [referredById], references: [id])
+  referrals      User[]              @relation("Referrals")
+  savedNumbers   SavedNumber[]
+  orders         Order[]
+  customers      Customer[]
+  resellerPricings ResellerPricing[]
+  walletTxns     WalletTransaction[]
+  notifications  Notification[]
+  payoutRequests PayoutRequest[]
+  storefront     ResellerStorefront?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  @@index([phone])
+  @@index([referralCode])
+}
+
+model Order {
+  id             String        @id @default(cuid())
+  reference      String        @unique
+  userId         String?
+  user           User?         @relation(fields: [userId], references: [id])
+  agentId        String?
+  customerId     String?
+  customer       Customer?      @relation(fields: [customerId], references: [id])
+  network        Network
+  bundleId       String
+  bundleSize     String
+  bundleValidity String
+  recipientPhone String
+  costPrice      Decimal       @db.Decimal(10, 2)
+  sellPrice      Decimal       @db.Decimal(10, 2)
+  paymentMethod  PaymentMethod
+  paymentRef     String?
+  status         OrderStatus   @default(PENDING)
+  datamartRef    String?
+  failureReason  String?
+  deliveredAt    DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([reference])
+  @@index([userId])
+  @@index([agentId])
+  @@index([customerId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model SavedNumber {
+  id      String  @id @default(cuid())
+  userId  String
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label   String
+  phone   String
+  network Network
+
+  @@index([userId])
+}
+
+model WalletTransaction {
+  id          String          @id @default(cuid())
+  userId      String
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        TransactionType
+  amount      Decimal         @db.Decimal(10, 2)
+  description String
+  orderId     String?
+  createdAt   DateTime        @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  body      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+}
+
+model PricingConfig {
+  id             String   @id @default(cuid())
+  network        Network?
+  bundleId       String?
+  markupPercent  Decimal  @db.Decimal(5, 2)
+  isGlobal       Boolean  @default(false)
+  isResellerTier Boolean  @default(false)
+  label          String?
+  updatedAt      DateTime @updatedAt
+}
+
+model PayoutRequest {
+  id                String       @id @default(cuid())
+  userId            String
+  user              User         @relation(fields: [userId], references: [id])
+  amount            Decimal      @db.Decimal(10, 2)
+  momoPhone         String
+  momoNetwork       Network
+  status            PayoutStatus @default(PENDING)
+  note              String?
+  adminNote         String?
+  processedAt       DateTime?
+  processedBy       String?
+  paystackTransferRef String?    // Reference from Paystack transfer API
+  createdAt         DateTime     @default(now())
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model ResellerStorefront {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id])
+  slug           String   @unique
+  displayName    String
+  whatsapp       String?
+  bio            String?
+  showMTN        Boolean  @default(true)
+  showTelecel    Boolean  @default(true)
+  showAirtelTigo Boolean  @default(true)
+  active         Boolean  @default(true)
+  totalSales     Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([slug])
+}
+
+model ResellerPricing {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  network     Network
+  bundleId    String
+  customPrice Decimal @db.Decimal(10, 2)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, network, bundleId])
+  @@index([userId])
+  @@index([network])
+}
+
+model Customer {
+  id          String   @id @default(cuid())
+  agentId      String   // The reseller/agent who owns this customer
+  agent        User     @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  name        String?
+  phone       String   // Customer's phone number (primary identifier)
+  network     Network? // Preferred network
+  totalOrders Int      @default(0) // Number of orders placed
+  totalSpent  Decimal  @default(0) @db.Decimal(10, 2) // Total amount spent
+  lastOrderAt DateTime?
+  orders      Order[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([agentId, phone])
+  @@index([agentId])
+  @@index([phone])
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  adminId    String
+  action     String
+  targetType String
+  targetId   String
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([adminId])
+  @@index([createdAt])
+}
+
+model SiteSettings {
+  id                    String   @id @default("singleton")
+  maintenanceMode       Boolean  @default(false)
+  maintenanceBanner     String?
+  referralCommission    Decimal  @default(0.02) @db.Decimal(4, 3)
+  minPayoutAmount       Decimal  @default(20.00) @db.Decimal(10, 2)
+  mtnStatus             String   @default("OPERATIONAL")
+  telecelStatus         String   @default("OPERATIONAL")
+  airteltigoStatus      String   @default("OPERATIONAL")
+  updatedAt             DateTime @updatedAt
+}
+
+enum Role {
+  USER
+  RESELLER
+  ADMIN
+}
+
+enum ResellerStatus {
+  PENDING_APPROVAL
+  APPROVED
+  SUSPENDED
+}
+
+enum Network {
+  MTN
+  TELECEL
+  AIRTELTIGO
+}
+
+enum OrderStatus {
+  PENDING
+  PAYMENT_CONFIRMED
+  PROCESSING
+  DELIVERED
+  FAILED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  MTN_MOMO
+  TELECEL_CASH
+  AIRTELTIGO_MONEY
+  WALLET
+}
+
+enum TransactionType {
+  CREDIT
+  DEBIT
+  COMMISSION
+  PAYOUT
+}
+
+enum PayoutStatus {
+  PENDING
+  APPROVED
+  PAID
+  REJECTED
+}
