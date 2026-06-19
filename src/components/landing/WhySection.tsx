@@ -63,7 +63,7 @@ export function WhySection() {
             {/* Why TamalData */}
           </span>
           <h2
-            className={`mt-4 font-heading text-4xl md:text-5xl lg:text-6xl leading-[0.95] ${
+            className={`mt-4 font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-[0.95] ${
               isDark ? "text-on-media" : "text-text-primary"
             }`}
           >

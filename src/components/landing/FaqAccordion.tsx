@@ -47,7 +47,7 @@ export function FaqAccordion() {
           viewport={{ once: true, margin: "-50px" }}
           className="text-center mb-10"
         >
-          <h2 className="font-heading text-text-primary text-5xl md:text-6xl leading-tight mb-4">
+          <h2 className="font-heading text-text-primary text-2xl sm:text-3xl md:text-5xl leading-tight mb-4">
             Frequently Asked Questions
           </h2>
         </motion.div>

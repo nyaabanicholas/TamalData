@@ -52,7 +52,7 @@ export function PricingPreview() {
           <span className="liquid-glass inline-block rounded-full px-3 py-1 text-xs font-medium uppercase tracking-widest mb-5 text-text-secondary font-barlow">
             Live Prices
           </span>
-          <h2 className="font-heading text-text-primary text-4xl sm:text-5xl leading-tight mb-4">
+          <h2 className="font-heading text-text-primary text-xl sm:text-3xl md:text-4xl leading-tight mb-4">
             Ghana&apos;s Best Data Rates
           </h2>
           <p className="text-text-secondary text-lg max-w-xl mx-auto font-barlow font-light">

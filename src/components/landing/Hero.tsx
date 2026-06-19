@@ -116,7 +116,7 @@ export function Hero() {
         <div className="mt-6 max-w-2xl">
           <BlurText
             text="Ghana's Fastest Data Across Every Network"
-            className={`font-heading text-5xl md:text-6xl lg:text-7xl leading-[0.95] ${
+            className={`font-heading text-[1.875rem] sm:text-4xl md:text-6xl lg:text-7xl leading-[0.95] ${
               isDark ? "text-on-media" : "text-text-primary"
             }`}
           />
@@ -180,7 +180,7 @@ export function Hero() {
           >
             <Clock className="h-7 w-7 text-accent-primary" strokeWidth={1.5} />
             <div
-              className={`mt-2 font-heading text-3xl md:text-4xl leading-none ${
+              className={`mt-2 font-heading text-xl md:text-3xl leading-none ${
                 isDark ? "text-on-media" : "text-text-primary"
               }`}
             >
@@ -203,7 +203,7 @@ export function Hero() {
           >
             <Globe className="h-7 w-7 text-accent-primary" strokeWidth={1.5} />
             <div
-              className={`mt-2 font-heading text-3xl md:text-4xl leading-none ${
+              className={`mt-2 font-heading text-xl md:text-3xl leading-none ${
                 isDark ? "text-on-media" : "text-text-primary"
               }`}
             >

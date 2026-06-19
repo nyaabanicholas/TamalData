@@ -29,7 +29,7 @@ export function ResellerBanner() {
             Reseller Programme
           </div>
 
-          <h2 className="font-heading text-text-primary text-5xl lg:text-6xl leading-tight mb-4">
+          <h2 className="font-heading text-text-primary text-2xl sm:text-3xl lg:text-5xl leading-tight mb-4">
             Sell Data. Earn Daily.
           </h2>
 

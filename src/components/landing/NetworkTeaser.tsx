@@ -26,7 +26,7 @@ export function NetworkTeaser({ statuses, cheapestPrices }: NetworkTeaserProps) 
           transition={{ duration: 0.6 }}
             className="text-center mb-12"
         >
-          <h2 className="font-heading text-text-primary text-5xl md:text-6xl leading-tight mb-4">
+          <h2 className="font-heading text-text-primary text-2xl sm:text-3xl md:text-5xl leading-tight mb-4">
             Every Network. One Platform.
           </h2>
           <p className="text-text-secondary text-lg max-w-xl mx-auto font-barlow font-light">
