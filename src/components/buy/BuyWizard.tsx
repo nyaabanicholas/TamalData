@@ -6,6 +6,7 @@ import { NetworkStep } from "./steps/NetworkStep";
 import { SuccessStep } from "./steps/SuccessStep";
 import { InlineBundleGrid } from "./InlineBundleGrid";
 import { motion, AnimatePresence } from "framer-motion";
+import { NETWORK_AVAILABLE } from "@/lib/staticBundles";
 import type { Network } from "@/types";
 
 interface BuyWizardProps {
@@ -16,7 +17,10 @@ export function BuyWizard({ defaultNetwork }: BuyWizardProps) {
   const { step, network, setNetwork } = useBuyStore();
 
   useEffect(() => {
-    if (defaultNetwork) setNetwork(defaultNetwork);
+    // Only pre-select the network if it's available; fall back to MTN
+    if (defaultNetwork) {
+      setNetwork(NETWORK_AVAILABLE[defaultNetwork] ? defaultNetwork : "MTN");
+    }
   }, [defaultNetwork, setNetwork]);
 
   return (

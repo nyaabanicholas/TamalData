@@ -51,6 +51,7 @@ interface NetworkCardProps {
   cheapestPrice?: number;
   isOperational?: boolean;
   selected?: boolean;
+  outOfStock?: boolean;
   onSelect?: (network: Network) => void;
   compact?: boolean;
 }
@@ -60,6 +61,7 @@ export function NetworkCard({
   cheapestPrice,
   isOperational = true,
   selected = false,
+  outOfStock = false,
   onSelect,
   compact = false,
 }: NetworkCardProps) {
@@ -71,12 +73,14 @@ export function NetworkCard({
       <motion.button
         type="button"
         className={cn(
-          "relative w-full text-left rounded-card transition-all duration-200 overflow-hidden focus-visible:outline-none cursor-pointer p-4 liquid-glass",
+          "relative w-full text-left rounded-card transition-all duration-200 overflow-hidden focus-visible:outline-none p-4 liquid-glass",
+          outOfStock ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
           selected ? "shadow-glow-sm ring-2" : ""
         )}
         style={selected ? { borderColor: primaryColor, boxShadow: `0 0 0 2px ${primaryColor}40` } : {}}
-        onClick={() => onSelect?.(network)}
-        whileTap={{ scale: 0.97 }}
+        onClick={() => !outOfStock && onSelect?.(network)}
+        disabled={outOfStock}
+        whileTap={outOfStock ? {} : { scale: 0.97 }}
         aria-pressed={selected}
       >
         <div
@@ -111,9 +115,13 @@ export function NetworkCard({
   return (
     <motion.button
       type="button"
-      className="relative w-full focus-visible:outline-none cursor-pointer group"
-      whileTap={{ scale: 0.97 }}
-      onClick={() => onSelect?.(network)}
+      className={cn(
+        "relative w-full focus-visible:outline-none group",
+        outOfStock ? "cursor-not-allowed" : "cursor-pointer"
+      )}
+      whileTap={outOfStock ? {} : { scale: 0.97 }}
+      onClick={() => !outOfStock && onSelect?.(network)}
+      disabled={outOfStock}
       aria-pressed={selected}
     >
       {/* Outer glow ring */}
@@ -178,9 +186,19 @@ export function NetworkCard({
         </div>
 
         {/* Selected checkmark */}
-        {selected && (
+        {selected && !outOfStock && (
           <div className="absolute top-4 right-4 h-8 w-8 rounded-full glass flex items-center justify-center z-10">
             <span className="text-accent-primary text-sm font-extrabold">✓</span>
+          </div>
+        )}
+
+        {/* Out of stock overlay */}
+        {outOfStock && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center rounded-[18px] z-20 liquid-glass-strong backdrop-blur-md"
+            style={{ backgroundColor: "rgba(0,0,0,0.45)" }}>
+            <span className="text-sm text-white font-bold px-4 py-2 rounded-full bg-white/10 border border-white/20 shadow-xl backdrop-blur-lg uppercase tracking-widest">
+              Coming Soon
+            </span>
           </div>
         )}
       </div>

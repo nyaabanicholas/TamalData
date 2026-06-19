@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { NetworkCard } from "@/components/ui/NetworkCard";
+import { NETWORK_AVAILABLE } from "@/lib/staticBundles";
 import type { Network, NetworkStatus } from "@/types";
 
 interface NetworkTeaserProps {
@@ -48,7 +49,8 @@ export function NetworkTeaser({ statuses, cheapestPrices }: NetworkTeaserProps) 
                   network={network}
                   cheapestPrice={cheapestPrices[network]}
                   isOperational={statusObj?.status === "OPERATIONAL"}
-                  onSelect={(net) => router.push(`/buy?network=${net}`)}
+                  outOfStock={!NETWORK_AVAILABLE[network]}
+                  onSelect={(net) => NETWORK_AVAILABLE[net] && router.push(`/buy?network=${net}`)}
                 />
               </motion.div>
             );

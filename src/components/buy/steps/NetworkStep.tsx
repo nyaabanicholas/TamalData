@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { NetworkCard } from "@/components/ui/NetworkCard";
 import { useBuyStore } from "@/store/useBuyStore";
-import { CHEAPEST_BY_NETWORK } from "@/lib/staticBundles";
+import { CHEAPEST_BY_NETWORK, NETWORK_AVAILABLE } from "@/lib/staticBundles";
 import type { Network } from "@/types";
 
 const NETWORKS: Network[] = ["MTN", "TELECEL", "AIRTELTIGO"];
@@ -39,6 +39,7 @@ export function NetworkStep() {
               network={net}
               cheapestPrice={CHEAPEST_BY_NETWORK[net]}
               selected={network === net}
+              outOfStock={!NETWORK_AVAILABLE[net]}
               onSelect={setNetwork}
             />
           </motion.div>

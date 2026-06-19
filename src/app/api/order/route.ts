@@ -7,6 +7,7 @@ import { getEffectivePrice, generateOrderReference } from "@/lib/markup";
 import { getBundleById } from "@/data/bundles";
 import { orderRateLimit, getClientIp } from "@/lib/ratelimit";
 import { sendSMS, SMS_TEMPLATES } from "@/lib/arkesel";
+import { notifyAdminLowBalance } from "@/lib/notify";
 import type { Network } from "@/types";
 import type { PaymentMethod } from "@prisma/client";
 
@@ -233,6 +234,8 @@ export async function POST(request: NextRequest) {
     // queued and gets delivered once DataMart is topped up. Payment goes through.
     const dataMartBalanceOk = await checkDataMartBalance(costPrice);
     if (!dataMartBalanceOk) {
+      // Alert admin to top up DataMart wallet
+      await notifyAdminLowBalance(reference, costPrice);
       return NextResponse.json({
         reference,
         success: true,
@@ -276,6 +279,7 @@ export async function POST(request: NextRequest) {
           where: { reference },
           data: { status: "PAYMENT_CONFIRMED" },
         });
+        await notifyAdminLowBalance(reference, costPrice);
         return NextResponse.json({
           reference,
           success: true,

@@ -34,7 +34,7 @@ export const STATIC_BUNDLES: Record<"MTN" | "TELECEL" | "AIRTELTIGO", DataBundle
     make("MTN", "mtn-40gb", "40GB", 165.00),
     make("MTN", "mtn-50gb", "50GB", 225.00),
   ],
-  TELECEL: [
+  TELECEL: ([
     make("TELECEL", "tcl-10gb",  "10GB",  45.00),
     make("TELECEL", "tcl-15gb",  "15GB",  67.50),
     make("TELECEL", "tcl-20gb",  "20GB",  90.00),
@@ -44,8 +44,8 @@ export const STATIC_BUNDLES: Record<"MTN" | "TELECEL" | "AIRTELTIGO", DataBundle
     make("TELECEL", "tcl-40gb",  "40GB",  165.00),
     make("TELECEL", "tcl-50gb",  "50GB",  200.00),
     make("TELECEL", "tcl-100gb", "100GB", 420.00),
-  ],
-  AIRTELTIGO: [
+  ] as ReturnType<typeof make>[]).map(b => ({ ...b, available: false })),
+  AIRTELTIGO: ([
     make("AIRTELTIGO", "at-1gb",  "1GB",  4.50),
     make("AIRTELTIGO", "at-2gb",  "2GB",  9.00),
     make("AIRTELTIGO", "at-3gb",  "3GB",  14.00),
@@ -59,7 +59,13 @@ export const STATIC_BUNDLES: Record<"MTN" | "TELECEL" | "AIRTELTIGO", DataBundle
     make("AIRTELTIGO", "at-25gb", "25GB", 105.00),
     make("AIRTELTIGO", "at-40gb", "40GB", 165.00),
     make("AIRTELTIGO", "at-50gb", "50GB", 210.00),
-  ],
+  ] as ReturnType<typeof make>[]).map(b => ({ ...b, available: false })),
+};
+
+export const NETWORK_AVAILABLE: Record<"MTN" | "TELECEL" | "AIRTELTIGO", boolean> = {
+  MTN: true,
+  TELECEL: false,
+  AIRTELTIGO: false,
 };
 
 export const ALL_STATIC_BUNDLES: DataBundle[] = [

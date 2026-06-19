@@ -4,6 +4,7 @@ import { verifyWebhookSignature, type PaystackWebhookEvent } from "@/lib/paystac
 import { placeOrder, toDatamartNetwork, checkDataMartBalance, parseCapacity } from "@/lib/datamart";
 import type { Network } from "@/types";
 import { sendSMS, SMS_TEMPLATES } from "@/lib/arkesel";
+import { notifyAdminLowBalance } from "@/lib/notify";
 import { redis } from "@/lib/redis";
 
 // Configuration for webhook idempotency
@@ -153,16 +154,16 @@ export async function POST(request: NextRequest) {
   const dataMartBalanceOk = await checkDataMartBalance(Number(order.costPrice));
   if (!dataMartBalanceOk) {
     console.error(`[webhook/paystack] DataMart balance insufficient for order ${reference}`);
+    // Keep order at PAYMENT_CONFIRMED so it can be retried once wallet is topped up
     await prisma.order.update({
       where: { reference },
-      data: {
-        status: "FAILED",
-        failureReason: "Insufficient DataMart wallet balance",
-      },
+      data: { status: "PAYMENT_CONFIRMED", paymentRef: reference },
     });
+    // Alert admin to top up DataMart wallet
+    await notifyAdminLowBalance(reference, Number(order.costPrice));
     await sendSMS(
       order.recipientPhone,
-      `Payment received but DataMart wallet balance is insufficient. Order ${reference} failed. Your payment will be refunded.`
+      `Payment confirmed for order ${reference}. Your data bundle will be delivered shortly. Thank you for your patience.`
     );
     return NextResponse.json({ received: true });
   }

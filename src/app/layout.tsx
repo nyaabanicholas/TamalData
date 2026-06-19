@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { Providers } from "@/components/providers";
 import { Navbar } from "@/components/ui/Navbar";
 import { Preloader } from "@/components/ui/Preloader";
+import { WhatsAppFAB } from "@/components/ui/WhatsAppFAB";
 import "./globals.css";
 
 const TawkToWidget = dynamic(
@@ -96,7 +97,7 @@ export default function RootLayout({
           {/* Global orb layer — fixed between body bg and content */}
           <div
             className="fixed inset-0 pointer-events-none overflow-hidden"
-            style={{ zIndex: 0 }}
+            style={{ zIndex: 0, willChange: "transform", contain: "layout paint" }}
             aria-hidden="true"
           >
             <div className="global-orb global-orb-1" />
@@ -105,6 +106,7 @@ export default function RootLayout({
           </div>
           <Navbar />
           {children}
+          <WhatsAppFAB />
           <TawkToWidget />
         </Providers>
       </body>

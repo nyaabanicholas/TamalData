@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { BundleCard } from "@/components/ui/BundleCard";
 import { GlowButton } from "@/components/ui/GlowButton";
 import { useRouter } from "next/navigation";
-import { STATIC_BUNDLES } from "@/lib/staticBundles";
+import { STATIC_BUNDLES, NETWORK_AVAILABLE } from "@/lib/staticBundles";
 import type { Network } from "@/types";
 
 const TABS: { key: Network; label: string; color: string }[] = [
@@ -22,7 +22,7 @@ export function PricingPreview() {
   const activeTab = TABS.find((t) => t.key === active)!;
 
   return (
-    <section className="section-padding section-bridge section-fade-edge relative overflow-hidden">
+    <section className="section-padding relative overflow-hidden">
       {/* Background accent */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -62,26 +62,33 @@ export function PricingPreview() {
 
         {/* Network tabs */}
         <div className="liquid-glass flex gap-2 justify-center mb-10 p-1.5 rounded-full w-fit mx-auto">
-          {TABS.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActive(tab.key)}
-              className="relative px-5 py-2.5 rounded-full text-sm font-semibold font-barlow transition-all duration-200"
-              style={
-                active === tab.key
-                  ? {
-                      backgroundColor: tab.color,
-                      color: tab.key === "MTN" ? "#1A1200" : "#fff",
-                      boxShadow: `0 4px 20px ${tab.color}40`,
-                    }
-                  : {
-                      color: "var(--text-secondary)",
-                    }
-              }
-            >
-              {tab.label}
-            </button>
-          ))}
+          {TABS.map((tab) => {
+            const available = NETWORK_AVAILABLE[tab.key];
+            return (
+              <button
+                key={tab.key}
+                onClick={() => available && setActive(tab.key)}
+                disabled={!available}
+                className="relative px-5 py-2.5 rounded-full text-sm font-semibold font-barlow transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+                style={
+                  active === tab.key
+                    ? {
+                        backgroundColor: tab.color,
+                        color: tab.key === "MTN" ? "#1A1200" : "#fff",
+                        boxShadow: `0 4px 20px ${tab.color}40`,
+                      }
+                    : {
+                        color: "var(--text-secondary)",
+                      }
+                }
+              >
+                {tab.label}
+                {!available && (
+                  <span className="ml-1.5 text-[9px] font-bold uppercase tracking-widest opacity-70">Soon</span>
+                )}
+              </button>
+            );
+          })}
         </div>
 
         {/* Bundle grid */}

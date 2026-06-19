@@ -31,6 +31,7 @@ export function Hero() {
       className={`relative min-h-[100dvh] flex flex-col overflow-hidden ${
         isDark ? "cinematic video-readable" : ""
       }`}
+      style={{ touchAction: "pan-y" }}
     >
       {/* Light-mode: animated radial glow behind the orb — stronger so the orb reads clearly */}
       {!isDark && (
@@ -54,7 +55,7 @@ export function Hero() {
           muted
           loop
           playsInline
-          preload="auto"
+          preload="none"
           aria-hidden="true"
           className="absolute left-1/2 top-0 -translate-x-1/2 object-cover object-top z-[1]"
           style={{
@@ -130,7 +131,7 @@ export function Hero() {
             isDark ? "text-on-media-muted" : "text-text-secondary"
           }`}
         >
-          MTN, Telecel and AirtelTigo bundles from GH₵1, delivered within minutes.
+          MTN data bundles from GH₵4.60, delivered within minutes.
           No account needed — pay with Mobile Money and your data lands fast.
         </motion.p>
 
@@ -168,10 +169,10 @@ export function Hero() {
           initial={enter.initial}
           animate={enter.animate}
           transition={{ duration: 0.6, ease: "easeOut", delay: 1.3 }}
-          className="relative z-20 mt-8 flex items-stretch gap-4"
+          className="relative z-20 mt-8 flex items-stretch gap-3 justify-center w-full max-w-[464px] px-2"
         >
           <div
-            className={`w-[220px] rounded-[1.25rem] p-5 text-left ${
+            className={`flex-1 min-w-0 max-w-[220px] rounded-[1.25rem] p-5 text-left ${
               isDark
                 ? "liquid-glass-media"
                 : "liquid-glass"
@@ -194,7 +195,7 @@ export function Hero() {
             </div>
           </div>
           <div
-            className={`w-[220px] rounded-[1.25rem] p-5 text-left ${
+            className={`flex-1 min-w-0 max-w-[220px] rounded-[1.25rem] p-5 text-left ${
               isDark
                 ? "liquid-glass-media"
                 : "liquid-glass"

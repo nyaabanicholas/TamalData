@@ -100,7 +100,7 @@ export function FadingVideo({ src, className, style, poster }: Props) {
       autoPlay
       muted
       playsInline
-      preload="auto"
+      preload="none"
       aria-hidden="true"
       className={className}
       style={{ opacity: 0, ...style }}
