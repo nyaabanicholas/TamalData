@@ -702,29 +702,26 @@
 
   /* ── Mobile performance: smaller orbs, lighter blur, GPU hints ── */
   @media (max-width: 768px) {
-    /* Stop expensive orb drift animations on mobile — static is fine */
-    .global-orb-1, .global-orb-2, .global-orb-accent {
-      animation: none !important;
-    }
+    /* Slow orb animations on mobile — keep aesthetics, reduce GPU cost */
     .global-orb-1 {
-      width: 420px;
-      height: 420px;
-      filter: blur(50px);
+      width: 800px;
+      height: 800px;
+      filter: blur(70px);
       left: -25%;
-      opacity: 0.6;
+      animation-duration: 120s !important;
     }
     .global-orb-2 {
-      width: 320px;
-      height: 320px;
-      filter: blur(40px);
-      right: -18%;
-      opacity: 0.5;
+      width: 700px;
+      height: 700px;
+      filter: blur(60px);
+      right: -20%;
+      animation-duration: 140s !important;
     }
     .global-orb-accent {
-      width: 260px;
-      height: 260px;
-      filter: blur(50px);
-      opacity: 0.45;
+      width: 600px;
+      height: 600px;
+      filter: blur(70px);
+      animation-duration: 160s !important;
     }
     /* Stop dark glass shine animation on mobile */
     .dark .liquid-glass::before,
@@ -752,11 +749,6 @@
     [data-framer-motion], .motion-div {
       transform: translateZ(0);
       will-change: transform, opacity;
-    }
-    /* Prevent horizontal overflow on any section */
-    section {
-      max-width: 100vw;
-      overflow-x: hidden;
     }
     /* Use containment to limit paint areas */
     .section-padding {

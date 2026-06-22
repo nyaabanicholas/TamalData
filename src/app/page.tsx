@@ -4,7 +4,6 @@ import { WhySection } from "@/components/landing/WhySection";
 import { PricingPreview } from "@/components/landing/PricingPreview";
 import { ResellerBanner } from "@/components/landing/ResellerBanner";
 import { FaqAccordion } from "@/components/landing/FaqAccordion";
-import { Footer } from "@/components/landing/Footer";
 import { CHEAPEST_BY_NETWORK } from "@/lib/staticBundles";
 import type { NetworkStatus } from "@/types";
 
@@ -36,7 +35,6 @@ export default async function HomePage() {
       <PricingPreview />
       <ResellerBanner />
       <FaqAccordion />
-      <Footer />
     </main>
   );
 }

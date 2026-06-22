@@ -17,7 +17,6 @@ const NAV_LINKS = [
   { href: "/buy",      label: "Buy Data" },
   { href: "/buy/bulk", label: "Bulk Buy" },
   { href: "/track",    label: "Track Order" },
-  { href: "/status",   label: "Status" },
   { href: "/reseller", label: "Reseller" },
   { href: "/about",    label: "About" },
 ];

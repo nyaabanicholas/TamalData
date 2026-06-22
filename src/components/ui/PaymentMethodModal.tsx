@@ -33,6 +33,7 @@ export function PaymentMethodModal({
   const [step, setStep] = useState<"select" | "processing" | "success" | "error">("select");
   const [error, setError] = useState("");
   const [orderRef, setOrderRef] = useState<string | null>(null);
+  const [deliveryStatus, setDeliveryStatus] = useState("OPERATIONAL");
 
   const handlePay = async () => {
     if (!method) return;
@@ -86,7 +87,13 @@ export function PaymentMethodModal({
   };
 
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    fetch("/api/delivery-status")
+      .then(r => r.json())
+      .then(d => { if (d?.status) setDeliveryStatus(d.status); })
+      .catch(() => {});
+  }, []);
 
   if (!mounted) return null;
 
@@ -123,6 +130,22 @@ export function PaymentMethodModal({
                 <p className="text-sm text-text-secondary font-barlow mb-4">
                   {description} — <span className="font-semibold text-text-primary">GH₵{amount.toFixed(2)}</span>
                 </p>
+
+                <div
+                  className="flex items-center gap-2 rounded-xl px-3 py-2 mb-3 text-xs font-barlow font-medium"
+                  style={{
+                    backgroundColor: deliveryStatus === "DOWN" ? "rgba(239,68,68,0.07)" : deliveryStatus === "DEGRADED" ? "rgba(245,158,11,0.07)" : "rgba(16,185,129,0.07)",
+                    border: `1px solid ${deliveryStatus === "DOWN" ? "rgba(239,68,68,0.22)" : deliveryStatus === "DEGRADED" ? "rgba(245,158,11,0.22)" : "rgba(16,185,129,0.20)"}`,
+                    color: deliveryStatus === "DOWN" ? "rgb(239,68,68)" : deliveryStatus === "DEGRADED" ? "rgb(245,158,11)" : "rgb(52,211,153)",
+                  }}
+                >
+                  <span className="h-1.5 w-1.5 rounded-full shrink-0" style={{ backgroundColor: "currentColor" }} />
+                  {deliveryStatus === "DOWN"
+                    ? "Service temporarily unavailable. We're working on it."
+                    : deliveryStatus === "DEGRADED"
+                    ? "Processing times elevated — expect delivery within 1–3 hours."
+                    : "Deliveries are blazing fast right now!"}
+                </div>
 
                 <div className="space-y-3">
                   <button

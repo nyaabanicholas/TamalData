@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { FaqAccordion } from "@/components/landing/FaqAccordion";
-import { Footer } from "@/components/landing/Footer";
 import { ShieldCheck, Zap, Award } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -91,7 +90,6 @@ export default function AboutPage() {
           <FaqAccordion />
         </section>
       </main>
-      <Footer />
     </>
   );
 }

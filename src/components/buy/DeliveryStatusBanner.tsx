@@ -55,10 +55,7 @@ export async function DeliveryStatusBanner({ network }: { network?: string }) {
     else if (statuses.includes("DEGRADED")) status = "DEGRADED";
   }
 
-  // Don't show banner if everything is operational (keep UI clean)
-  if (status === "OPERATIONAL") return null;
-
-  const cfg = STATUS_CONFIG[status] ?? STATUS_CONFIG.DEGRADED;
+  const cfg = STATUS_CONFIG[status] ?? STATUS_CONFIG.OPERATIONAL;
   const Icon = cfg.icon;
 
   return (

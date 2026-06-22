@@ -23,7 +23,7 @@ const FAQS = [
   },
   {
     q: "What happens if my data doesn't arrive?",
-    a: "If your data isn't delivered within 15 minutes, you receive a full refund automatically. You can also track your order in real time on the Track Order page.",
+    a: "If your data hasn't arrived within 12 hours, contact our support team at support@tamaldata.com right away and we'll resolve it. For delays under 12 hours, delivery is still in progress — track your order in real time on the Track Order page.",
   },
   {
     q: "How do I become a reseller?",

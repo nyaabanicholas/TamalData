@@ -57,10 +57,8 @@ export function Hero() {
           playsInline
           preload="none"
           aria-hidden="true"
-          className="absolute left-1/2 top-0 -translate-x-1/2 object-cover object-top z-[1]"
+          className="absolute inset-0 w-full h-full object-cover object-top z-[1]"
           style={{
-            width: "120%",
-            height: "120%",
             mixBlendMode: "screen",
             opacity: 1,
             filter: "brightness(1.5) contrast(1.15)",
@@ -71,8 +69,7 @@ export function Hero() {
       ) : (
         <FadingVideo
           src={HERO_VIDEO}
-          className="absolute left-1/2 top-0 -translate-x-1/2 object-cover object-top z-0"
-          style={{ width: "120%", height: "120%" }}
+          className="absolute inset-0 w-full h-full object-cover object-top z-0"
         />
       )}
 
@@ -88,7 +85,7 @@ export function Hero() {
       )}
 
       {/* Content layer */}
-      <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 pt-24 text-center">
+      <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 pt-32 sm:pt-40 text-center">
         {/* Badge */}
         <motion.div
           initial={enter.initial}
