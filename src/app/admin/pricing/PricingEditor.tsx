@@ -41,6 +41,7 @@ export function PricingEditor({ globalConfigs, bundles, globalRetailMarkup }: Pr
   const [tab, setTab] = useState<NetworkTab>("MTN");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [resetting, setResetting] = useState(false);
   const [error, setError] = useState("");
 
   // Global tier markups
@@ -95,6 +96,18 @@ export function PricingEditor({ globalConfigs, bundles, globalRetailMarkup }: Pr
     } finally {
       setSaving(false);
     }
+  }
+
+  async function handleResetMarkup() {
+    if (!confirm("Delete all retail PricingConfig overrides? Prices will revert to static bundle rates (no markup).")) return;
+    setResetting(true);
+    setError("");
+    try {
+      const res = await fetch("/api/admin/reset-pricing", { method: "POST" });
+      if (!res.ok) { const d = await res.json(); setError(d.error ?? "Reset failed"); }
+      else { router.refresh(); }
+    } catch { setError("Network error"); }
+    finally { setResetting(false); }
   }
 
   const tabBundles = bundles.filter((b) => b.network === tab);
@@ -224,9 +237,18 @@ export function PricingEditor({ globalConfigs, bundles, globalRetailMarkup }: Pr
 
       {error && <p className="text-color-error text-sm">{error}</p>}
 
-      <GlowButton onClick={handleSave} disabled={saving} className="w-full">
-        {saving ? "Saving…" : saved ? "Saved!" : "Save All Prices"}
-      </GlowButton>
+      <div className="flex gap-3">
+        <GlowButton onClick={handleSave} disabled={saving || resetting} className="flex-1">
+          {saving ? "Saving…" : saved ? "Saved!" : "Save All Prices"}
+        </GlowButton>
+        <button
+          onClick={handleResetMarkup}
+          disabled={resetting || saving}
+          className="px-4 py-2 rounded-xl text-sm font-semibold text-color-error border border-color-error/30 hover:bg-color-error/10 transition-all disabled:opacity-50"
+        >
+          {resetting ? "Resetting…" : "Reset to No Markup"}
+        </button>
+      </div>
     </div>
   );
 }

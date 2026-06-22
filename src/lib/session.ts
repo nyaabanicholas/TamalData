@@ -30,12 +30,20 @@ export async function auth(): Promise<AppSession | null> {
     // that was invalidating sessions and forcing re-login on every page.
     // The single refresh still happens once per request in middleware.
     let authId: string | undefined;
-    const { data: claimsData, error } = await supabase.auth.getClaims();
 
-    if (!error && claimsData?.claims?.sub) {
-      authId = claimsData.claims.sub as string;
-    } else {
-      // Fallback: read session locally (no network) for transient edge cases.
+    // getClaims() is local/fast but may not exist in older SDK versions — wrap in
+    // its own try so a TypeError falls through to getSession() rather than being
+    // caught by the outer catch and returning null immediately.
+    try {
+      const { data: claimsData, error } = await supabase.auth.getClaims();
+      if (!error && claimsData?.claims?.sub) {
+        authId = claimsData.claims.sub as string;
+      }
+    } catch { /* getClaims not available in this SDK version */ }
+
+    if (!authId) {
+      // Middleware refreshes the token on every request, so getSession() reads a
+      // fresh JWT from the cookie without a network call.
       const { data: sessionData } = await supabase.auth.getSession();
       authId = sessionData?.session?.user?.id;
     }

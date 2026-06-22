@@ -600,7 +600,7 @@
     background: radial-gradient(circle at 38% 38%, var(--orb-core-1) 0%, var(--orb-mid-1) 42%, transparent 70%);
     top: 5%;
     left: -20%;
-    animation: orb-drift-1 50s ease-in-out infinite;
+    animation: orb-drift-1 180s ease-in-out infinite;
     filter: blur(90px);
   }
   .global-orb-2 {
@@ -609,7 +609,7 @@
     background: radial-gradient(circle at 62% 60%, var(--orb-core-2) 0%, var(--orb-mid-2) 44%, transparent 70%);
     bottom: 10%;
     right: -15%;
-    animation: orb-drift-2 60s ease-in-out infinite;
+    animation: orb-drift-2 210s ease-in-out infinite;
     filter: blur(80px);
   }
   .global-orb-accent {
@@ -619,7 +619,7 @@
     top: 45%;
     left: 50%;
     transform: translate(-50%, -50%);
-    animation: orb-drift-3 70s ease-in-out infinite;
+    animation: orb-drift-3 240s ease-in-out infinite;
     filter: blur(100px);
   }
 
