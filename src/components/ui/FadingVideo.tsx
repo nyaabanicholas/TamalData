@@ -103,7 +103,13 @@ export function FadingVideo({ src, className, style, poster }: Props) {
       preload="none"
       aria-hidden="true"
       className={className}
-      style={{ opacity: 0, ...style }}
+      style={{
+        opacity: 0,
+        willChange: "opacity",
+        transform: "translateZ(0)",
+        backfaceVisibility: "hidden",
+        ...style,
+      }}
     />
   );
 }

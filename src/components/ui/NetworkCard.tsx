@@ -73,40 +73,32 @@ export function NetworkCard({
       <motion.button
         type="button"
         className={cn(
-          "relative w-full text-left rounded-card transition-all duration-200 overflow-hidden focus-visible:outline-none p-4 liquid-glass",
-          outOfStock ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
+          "relative w-full text-left rounded-card transition-all duration-200 overflow-hidden focus-visible:outline-none p-3 liquid-glass",
+          "cursor-pointer",
           selected ? "shadow-glow-sm ring-2" : ""
         )}
         style={selected ? { borderColor: primaryColor, boxShadow: `0 0 0 2px ${primaryColor}40` } : {}}
-        onClick={() => !outOfStock && onSelect?.(network)}
-        disabled={outOfStock}
-        whileTap={outOfStock ? {} : { scale: 0.97 }}
+        onClick={() => onSelect?.(network)}
+        whileTap={{ scale: 0.97 }}
         aria-pressed={selected}
       >
         <div
           className="absolute inset-0 opacity-[0.06] rounded-card"
           style={{ backgroundColor: primaryColor }}
         />
-        <div className="relative flex items-center gap-3 z-10">
+        <div className="relative flex items-center gap-2 z-10">
           <div
-            className="h-9 w-11 rounded-lg flex items-center justify-center font-mono font-bold text-xs shrink-0"
+            className="h-8 w-10 rounded-lg flex items-center justify-center font-mono font-bold text-[10px] shrink-0"
             style={{ backgroundColor: primaryColor, color: textOnCard }}
           >
             {abbrev}
           </div>
-          <div className="min-w-0">
-            <p className="font-display font-bold text-text-primary">{label}</p>
+          <div className="min-w-0 flex-1 overflow-hidden">
+            <p className="font-display font-bold text-text-primary text-sm truncate">{label}</p>
             {cheapestPrice != null && (
-              <p className="text-xs text-text-secondary">From {formatGHS(cheapestPrice)}</p>
+              <p className="text-[11px] text-text-secondary truncate">From {formatGHS(cheapestPrice)}</p>
             )}
           </div>
-          <div
-            className={cn(
-              "ml-auto h-2 w-2 rounded-full shrink-0",
-              isOperational ? "animate-pulse-dot" : "opacity-30"
-            )}
-            style={{ backgroundColor: isOperational ? "#10B981" : primaryColor }}
-          />
         </div>
       </motion.button>
     );
@@ -116,12 +108,10 @@ export function NetworkCard({
     <motion.button
       type="button"
       className={cn(
-        "relative w-full focus-visible:outline-none group",
-        outOfStock ? "cursor-not-allowed" : "cursor-pointer"
+        "relative w-full focus-visible:outline-none group cursor-pointer"
       )}
-      whileTap={outOfStock ? {} : { scale: 0.97 }}
-      onClick={() => !outOfStock && onSelect?.(network)}
-      disabled={outOfStock}
+      whileTap={{ scale: 0.97 }}
+      onClick={() => onSelect?.(network)}
       aria-pressed={selected}
     >
       {/* Outer glow ring */}
@@ -192,12 +182,12 @@ export function NetworkCard({
           </div>
         )}
 
-        {/* Out of stock overlay */}
+        {/* Out of stock badge — shown subtly, doesn't block clicks */}
         {outOfStock && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center rounded-[18px] z-20 liquid-glass-strong backdrop-blur-md"
-            style={{ backgroundColor: "rgba(0,0,0,0.45)" }}>
-            <span className="text-sm text-white font-bold px-4 py-2 rounded-full bg-white/10 border border-white/20 shadow-xl backdrop-blur-lg uppercase tracking-widest">
-              Coming Soon
+          <div className="absolute top-3 right-3 z-20">
+            <span className="text-[10px] text-white font-bold px-2.5 py-1 rounded-full uppercase tracking-widest"
+              style={{ backgroundColor: "rgba(0,0,0,0.55)", border: "1px solid rgba(255,255,255,0.15)" }}>
+              Out of Stock
             </span>
           </div>
         )}

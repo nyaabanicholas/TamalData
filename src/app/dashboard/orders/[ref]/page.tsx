@@ -112,7 +112,7 @@ export default async function OrderDetailPage({ params }: { params: { ref: strin
             <Row label="Payment Ref"  value={order.paymentRef}                                       mono />
           )}
           {order.datamartRef && (
-            <Row label="DataMart Ref" value={order.datamartRef}                                      mono />
+            <Row label="Delivery Ref" value={order.datamartRef}                                      mono />
           )}
         </GlassPanel>
 

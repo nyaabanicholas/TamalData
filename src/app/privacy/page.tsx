@@ -132,7 +132,7 @@ export default function PrivacyPage() {
               </p>
               <ul className="list-disc list-inside space-y-1 ml-2">
                 <li><strong>Paystack</strong> — for secure payment processing</li>
-                <li><strong>DataMart Ghana</strong> — our network API provider for bundle delivery</li>
+                <li><strong>Our Network Partner</strong> — for bundle delivery and provisioning</li>
                 <li><strong>Arkesel</strong> — for SMS delivery notifications</li>
               </ul>
               <p>All third-party providers are bound by their own privacy policies.</p>

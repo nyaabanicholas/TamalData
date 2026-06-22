@@ -31,7 +31,7 @@ const FAQS = [
   },
   {
     q: "Are TamalData prices really the cheapest?",
-    a: "Yes — we source directly from DataMart Ghana's reseller API and apply a transparent, low markup. Our prices beat market rates on all major networks.",
+    a: "Yes — we work directly with wholesale network partners and apply a transparent, low markup. Our prices beat market rates on all major networks.",
   },
 ];
 

@@ -702,40 +702,65 @@
 
   /* ── Mobile performance: smaller orbs, lighter blur, GPU hints ── */
   @media (max-width: 768px) {
+    /* Stop expensive orb drift animations on mobile — static is fine */
+    .global-orb-1, .global-orb-2, .global-orb-accent {
+      animation: none !important;
+    }
     .global-orb-1 {
-      width: 500px;
-      height: 500px;
-      filter: blur(55px);
+      width: 420px;
+      height: 420px;
+      filter: blur(50px);
       left: -25%;
+      opacity: 0.6;
     }
     .global-orb-2 {
-      width: 380px;
-      height: 380px;
-      filter: blur(45px);
+      width: 320px;
+      height: 320px;
+      filter: blur(40px);
       right: -18%;
+      opacity: 0.5;
     }
     .global-orb-accent {
-      width: 300px;
-      height: 300px;
-      filter: blur(55px);
+      width: 260px;
+      height: 260px;
+      filter: blur(50px);
+      opacity: 0.45;
     }
-    /* Reduce backdrop-filter cost on mobile Android */
+    /* Stop dark glass shine animation on mobile */
+    .dark .liquid-glass::before,
+    .dark .liquid-glass-strong::before {
+      animation: none !important;
+    }
+    /* Stop rotating glow on mobile */
+    .liquid-glass-glow::after {
+      animation: none !important;
+    }
+    /* Reduce backdrop-filter cost substantially on mobile Android */
     .liquid-glass {
-      backdrop-filter: blur(16px) saturate(160%);
-      -webkit-backdrop-filter: blur(16px) saturate(160%);
+      backdrop-filter: blur(12px) saturate(150%);
+      -webkit-backdrop-filter: blur(12px) saturate(150%);
     }
     .liquid-glass-strong {
-      backdrop-filter: blur(36px) saturate(180%);
-      -webkit-backdrop-filter: blur(36px) saturate(180%);
+      backdrop-filter: blur(24px) saturate(170%);
+      -webkit-backdrop-filter: blur(24px) saturate(170%);
     }
-    .liquid-glass-intense {
-      backdrop-filter: blur(40px) saturate(180%);
-      -webkit-backdrop-filter: blur(40px) saturate(180%);
+    .liquid-glass-intense, .liquid-glass-media {
+      backdrop-filter: blur(28px) saturate(160%);
+      -webkit-backdrop-filter: blur(28px) saturate(160%);
+    }
+    /* Promote animated elements to GPU layers */
+    [data-framer-motion], .motion-div {
+      transform: translateZ(0);
+      will-change: transform, opacity;
     }
     /* Prevent horizontal overflow on any section */
     section {
       max-width: 100vw;
       overflow-x: hidden;
+    }
+    /* Use containment to limit paint areas */
+    .section-padding {
+      contain: layout style;
     }
   }
 }

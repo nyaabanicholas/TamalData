@@ -5,6 +5,7 @@ import { Providers } from "@/components/providers";
 import { Navbar } from "@/components/ui/Navbar";
 import { Preloader } from "@/components/ui/Preloader";
 import { WhatsAppFAB } from "@/components/ui/WhatsAppFAB";
+import { FooterWrapper } from "@/components/ui/FooterWrapper";
 import "./globals.css";
 
 const TawkToWidget = dynamic(
@@ -62,6 +63,10 @@ export const metadata: Metadata = {
     "data reseller Ghana",
     "TamalData",
   ],
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
   openGraph: {
     title: "TamalData — Ghana's Cheapest Data Bundles",
     description:
@@ -91,6 +96,10 @@ export default function RootLayout({
       className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} ${faunaOne.variable} ${barlow.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </head>
       <body className="bg-bg-base text-text-primary antialiased">
         <Providers>
           <Preloader />
@@ -106,6 +115,7 @@ export default function RootLayout({
           </div>
           <Navbar />
           {children}
+          <FooterWrapper />
           <WhatsAppFAB />
           <TawkToWidget />
         </Providers>

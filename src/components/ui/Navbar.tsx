@@ -13,6 +13,7 @@ import { DashboardSidebar } from "./DashboardSidebar";
 
 
 const NAV_LINKS = [
+  { href: "/",         label: "Home" },
   { href: "/buy",      label: "Buy Data" },
   { href: "/buy/bulk", label: "Bulk Buy" },
   { href: "/track",    label: "Track Order" },
@@ -91,7 +92,7 @@ export function Navbar() {
           {/* Desktop nav — perfectly centered on screen, independent of side elements */}
           <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-1 rounded-full px-2 py-1.5 liquid-glass-strong ring-1 ring-color-border/50">
             {NAV_LINKS.map((l) => {
-              const active = pathname === l.href || pathname.startsWith(l.href + "/");
+              const active = l.href === "/" ? pathname === "/" : (pathname === l.href || pathname.startsWith(l.href + "/"));
               return (
                 <Link
                   key={l.href}
@@ -168,7 +169,7 @@ export function Navbar() {
             >
               <nav className="liquid-glass rounded-[1.25rem] p-3 flex flex-col gap-1">
                 {NAV_LINKS.map((l) => {
-                  const active = pathname === l.href;
+                  const active = l.href === "/" ? pathname === "/" : pathname === l.href;
                   return (
                     <Link
                       key={l.href}

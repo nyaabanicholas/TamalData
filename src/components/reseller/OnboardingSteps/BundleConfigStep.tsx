@@ -80,7 +80,7 @@ export function BundleConfigStep({ data, onChange, onNext, onBack }: BundleConfi
           Set Your Bundle Prices
         </h2>
         <p className="text-text-secondary font-barlow max-w-2xl mx-auto">
-          Your cost is 8% over DataMart price. Set your sell price to customers and earn the difference as profit.
+          Your cost is the wholesale price. Set your sell price to customers and earn the difference as profit.
         </p>
       </motion.div>
 

@@ -25,7 +25,7 @@ const FEATURES = [
     icon: Wallet,
     title: "Reseller Pricing",
     tags: ["Wholesale rates", "MoMo payout", "No hidden fees"],
-    body: "Sourced directly from DataMart Ghana's reseller API and passed straight to you at the lowest price.",
+    body: "Sourced directly from wholesale network partners and passed straight to you at the lowest possible price.",
   },
 ];
 

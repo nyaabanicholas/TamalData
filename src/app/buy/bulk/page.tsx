@@ -14,7 +14,7 @@ export default function BulkBuyPage() {
             Bulk Data Purchase
           </h1>
           <p className="text-text-secondary font-barlow text-lg max-w-2xl mx-auto">
-            Send data bundles to multiple numbers at once. All deducted from your DataMart wallet.
+            Send data bundles to multiple numbers at once. All deducted from your wallet balance.
           </p>
         </div>
         <BulkBuyUI />

@@ -9,12 +9,13 @@ import { useBuyStore } from "@/store/useBuyStore";
 import { STATIC_BUNDLES } from "@/lib/staticBundles";
 import type { DataBundle, Network } from "@/types";
 
+let toastTimer: ReturnType<typeof setTimeout> | null = null;
+
 export function InlineBundleGrid() {
   const { network, goToStep } = useBuyStore();
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
 
-  // Render static bundles instantly, then overlay admin-priced values so the
-  // displayed price matches exactly what the order route will charge.
   const staticBundles: DataBundle[] = network ? STATIC_BUNDLES[network as Network] : [];
   const [priced, setPriced] = useState<Record<string, { price: number; costPrice: number }>>({});
 
@@ -30,17 +31,24 @@ export function InlineBundleGrid() {
         setPriced(map);
       })
       .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [network]);
 
   const bundles: DataBundle[] = staticBundles.map((b) =>
     priced[b.id] ? { ...b, price: priced[b.id].price } : b,
   );
 
+  const showToast = (msg: string) => {
+    setToast(msg);
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => setToast(null), 3500);
+  };
+
   const handleSelect = (bundle: DataBundle) => {
-    if (!bundle.available) return;
+    if (!bundle.available) {
+      showToast(`${network} data is currently out of stock. We're restocking soon!`);
+      return;
+    }
     setSelectedId((prev) => (prev === bundle.id ? null : bundle.id));
   };
 
@@ -72,8 +80,23 @@ export function InlineBundleGrid() {
         </div>
       </div>
 
-      {/* Bundle grid — instant, no loading skeleton needed */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      {/* Out-of-stock toast */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="mb-4 rounded-xl px-4 py-3 text-sm font-barlow font-medium text-center"
+            style={{ backgroundColor: "rgba(239,68,68,0.12)", color: "var(--color-error)", border: "1px solid rgba(239,68,68,0.25)" }}
+          >
+            {toast}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Bundle grid — 1 col on mobile, 2 on sm, 3 on lg */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {bundles.map((bundle) => {
           const isExpanded = selectedId === bundle.id;
           return (

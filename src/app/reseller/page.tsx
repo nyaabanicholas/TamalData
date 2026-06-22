@@ -116,7 +116,7 @@ export default async function ResellerPage() {
               <div>
                 <p className="font-semibold text-text-primary text-sm mb-1">Your Reseller Advantage</p>
                 <p className="text-xs text-text-secondary">
-                  You buy at an 8% markup over DataMart cost — retail customers pay 15%.
+                  You buy at wholesale pricing — retail customers pay the standard rate.
                   Your margin is the difference. Build your own customer base and pocket the spread.
                 </p>
               </div>

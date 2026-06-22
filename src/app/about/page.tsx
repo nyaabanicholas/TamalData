@@ -23,8 +23,8 @@ export default function AboutPage() {
             </h1>
             <p className="text-text-secondary text-lg leading-relaxed font-barlow font-light">
               TamalData is a premium data bundle marketplace built for Ghanaians.
-              We source directly from DataMart Ghana&apos;s reseller API and pass
-              the savings on to you — with fast delivery, zero hidden charges, and
+              We work with wholesale network partners and pass
+              the savings directly to you — with fast delivery, zero hidden charges, and
               a seamless experience unlike anything else in the market.
             </p>
           </div>

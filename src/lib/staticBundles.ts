@@ -64,8 +64,8 @@ export const STATIC_BUNDLES: Record<"MTN" | "TELECEL" | "AIRTELTIGO", DataBundle
 
 export const NETWORK_AVAILABLE: Record<"MTN" | "TELECEL" | "AIRTELTIGO", boolean> = {
   MTN: true,
-  TELECEL: false,
-  AIRTELTIGO: false,
+  TELECEL: true,
+  AIRTELTIGO: true,
 };
 
 export const ALL_STATIC_BUNDLES: DataBundle[] = [

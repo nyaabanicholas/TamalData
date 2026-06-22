@@ -133,7 +133,7 @@ export function DashboardQuickBuy({ userId }: DashboardQuickBuyProps) {
               <p className="text-xs font-barlow font-semibold text-text-secondary uppercase tracking-wider mb-3">
                 Select network
               </p>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 gap-2">
                 {NETWORKS.map((net) => (
                   <NetworkCard
                     key={net}
@@ -183,24 +183,25 @@ export function DashboardQuickBuy({ userId }: DashboardQuickBuyProps) {
 
               {!loadingBundles && !fetchError && (
                 <div className="grid grid-cols-2 gap-2 max-h-[200px] overflow-y-auto pr-1 scrollbar-thin">
-                  {bundles.filter((b) => b.available).map((b) => (
+                  {bundles.map((b) => (
                     <button
                       key={b.id}
-                      onClick={() => handleSelectBundle(b)}
-                      className="liquid-glass rounded-xl p-3 text-left transition-all hover:border-accent-primary/30 active:scale-[0.98] flex flex-col gap-0.5"
+                      onClick={() => b.available && handleSelectBundle(b)}
+                      disabled={!b.available}
+                      className={`liquid-glass rounded-xl p-3 text-left transition-all active:scale-[0.98] flex flex-col gap-0.5 ${b.available ? "hover:border-accent-primary/30 cursor-pointer" : "opacity-50 cursor-not-allowed"}`}
                     >
                       <span className="font-heading font-bold text-sm text-text-primary">
                         {b.size}
                       </span>
                       <span className="font-barlow text-xs text-text-muted">
-                        GH₵{b.price.toFixed(2)}
+                        {b.available ? `GH₵${b.price.toFixed(2)}` : "Out of Stock"}
                       </span>
                       <span className="font-barlow text-[10px] text-text-muted/60">
                         {b.validity}
                       </span>
                     </button>
                   ))}
-                  {bundles.filter((b) => b.available).length === 0 && (
+                  {bundles.length === 0 && (
                     <p className="col-span-2 text-xs text-text-muted font-barlow py-4 text-center">
                       No bundles available
                     </p>
