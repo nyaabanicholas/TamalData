@@ -7,6 +7,7 @@ import { z } from "zod";
 import { GlowButton } from "@/components/ui/GlowButton";
 import { formatGHS } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { CheckCircle2 } from "lucide-react";
 
 const schema = z.object({
   amount:      z.number().min(1, "Enter an amount"),
@@ -21,6 +22,7 @@ export function PayoutForm({ balance, minPayout }: { balance: number; minPayout:
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState<{ amount: number; phone: string } | null>(null);
 
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -42,6 +44,7 @@ export function PayoutForm({ balance, minPayout }: { balance: number; minPayout:
         const body = await res.json();
         setError(body.error ?? "Request failed");
       } else {
+        setSuccess({ amount: data.amount, phone: data.momoPhone });
         router.refresh();
       }
     } catch {
@@ -50,6 +53,17 @@ export function PayoutForm({ balance, minPayout }: { balance: number; minPayout:
       setSubmitting(false);
     }
   }
+
+  if (success) return (
+    <div className="text-center py-8">
+      <CheckCircle2 className="h-14 w-14 text-color-success mx-auto mb-4" strokeWidth={1.3} />
+      <p className="font-display font-bold text-xl text-text-primary mb-2">Payout Sent!</p>
+      <p className="text-text-secondary text-sm font-barlow">
+        <span className="font-semibold text-text-primary">{formatGHS(success.amount)}</span> is on its way to {success.phone}.
+        Allow a few minutes for the MoMo credit to arrive.
+      </p>
+    </div>
+  );
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -103,7 +117,7 @@ export function PayoutForm({ balance, minPayout }: { balance: number; minPayout:
       {error && <p className="text-color-error text-sm">{error}</p>}
 
       <GlowButton type="submit" disabled={submitting} className="w-full">
-        {submitting ? "Submitting..." : "Request Payout"}
+        {submitting ? "Sending payout…" : `Withdraw ${formatGHS(watch("amount") || 0)} Now`}
       </GlowButton>
     </form>
   );
