@@ -25,19 +25,14 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // Primary: verify the access token via Supabase API.
-  // Falls back to getSession() (local, no network) when getUser() fails —
-  // handles transient API errors, rate limits, and Supabase cold starts
-  // so legitimate sessions aren't lost to false negatives.
-  let user;
-  const { data, error } = await supabase.auth.getUser();
-
-  if (error || !data?.user) {
-    const { data: sessionData } = await supabase.auth.getSession();
-    user = sessionData?.session?.user ?? null;
-  } else {
-    user = data.user;
-  }
+  // Use getSession() in Edge middleware — it reads the JWT locally from cookies
+  // without a network round-trip to Supabase. getUser() always makes a network
+  // call which can fail on Edge Runtime (timeouts, rate limits) and causes valid
+  // sessions to appear null, logging the user out on every page navigation.
+  // Actual cryptographic JWT validation happens in server components / route
+  // handlers via auth() which calls getUser() in the Node.js runtime.
+  const { data: sessionData } = await supabase.auth.getSession();
+  const user = sessionData?.session?.user ?? null;
 
   return { supabaseResponse, user };
 }

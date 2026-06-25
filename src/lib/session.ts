@@ -24,26 +24,15 @@ export async function auth(): Promise<AppSession | null> {
   try {
     const supabase = await createClient();
 
-    // Verify the session via getClaims(): for asymmetric JWTs this is a LOCAL
-    // verification (no network round-trip → fast) and, crucially, it does NOT
-    // trigger a token refresh. That avoids the concurrent refresh-token rotation
-    // that was invalidating sessions and forcing re-login on every page.
-    // The single refresh still happens once per request in middleware.
+    // getUser() validates the JWT against Supabase's auth server — reliable in
+    // Node.js runtime (server components, route handlers). Falls back to
+    // getSession() which handles token refresh via the refresh token cookie.
     let authId: string | undefined;
 
-    // getClaims() is local/fast but may not exist in older SDK versions — wrap in
-    // its own try so a TypeError falls through to getSession() rather than being
-    // caught by the outer catch and returning null immediately.
-    try {
-      const { data: claimsData, error } = await supabase.auth.getClaims();
-      if (!error && claimsData?.claims?.sub) {
-        authId = claimsData.claims.sub as string;
-      }
-    } catch { /* getClaims not available in this SDK version */ }
-
-    if (!authId) {
-      // Middleware refreshes the token on every request, so getSession() reads a
-      // fresh JWT from the cookie without a network call.
+    const { data: userData } = await supabase.auth.getUser();
+    if (userData?.user) {
+      authId = userData.user.id;
+    } else {
       const { data: sessionData } = await supabase.auth.getSession();
       authId = sessionData?.session?.user?.id;
     }
