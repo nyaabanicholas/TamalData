@@ -48,6 +48,8 @@ const barlow = Barlow({
   display: "swap",
 });
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: {
     default: "TamalData — Ghana's Cheapest Data Bundles | MTN, Telecel, AirtelTigo",
@@ -102,7 +104,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className="bg-bg-base text-text-primary antialiased">
-        <ClerkProvider>
+        <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
           <Providers>
           <Preloader />
           {/* Global orb layer — fixed between body bg and content */}
