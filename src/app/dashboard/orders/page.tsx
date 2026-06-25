@@ -17,7 +17,7 @@ export default async function OrderHistoryPage({
   searchParams: { page?: string; status?: string; network?: string };
 }) {
   const session = await auth();
-  if (!session?.user) redirect("/auth/login?from=/dashboard/orders");
+  if (!session?.user) redirect("/sign-in?from=/dashboard/orders");
 
   const page = Math.max(1, parseInt(searchParams.page ?? "1"));
   const status = searchParams.status;

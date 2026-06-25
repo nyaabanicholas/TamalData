@@ -15,7 +15,7 @@ export const metadata: Metadata = { title: "Dashboard — TamalData" };
 
 export default async function DashboardPage() {
   const session = await auth();
-  if (!session?.user) redirect("/auth/login?from=/dashboard");
+  if (!session?.user) redirect("/sign-in?from=/dashboard");
 
   const userId = session.user.id;
 

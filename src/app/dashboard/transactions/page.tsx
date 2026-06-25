@@ -16,7 +16,7 @@ const TYPE_LABEL: Record<string, { label: string; color: string }> = {
 
 export default async function TransactionsPage() {
   const session = await auth();
-  if (!session?.user) redirect("/auth/login?from=/dashboard/transactions");
+  if (!session?.user) redirect("/sign-in?from=/dashboard/transactions");
 
   const txns = await prisma.walletTransaction.findMany({
     where: { userId: session.user.id },

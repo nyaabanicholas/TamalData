@@ -19,7 +19,7 @@ export default async function AdminUserDetailPage({
 }) {
   const session = await auth();
   const role = (session?.user as never as { role?: string } | undefined)?.role;
-  if (!session || role !== "ADMIN") redirect("/auth/login");
+  if (!session || role !== "ADMIN") redirect("/sign-in");
 
   const user = await prisma.user.findUnique({
     where: { id: params.id },

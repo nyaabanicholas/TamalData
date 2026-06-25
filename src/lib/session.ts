@@ -1,4 +1,4 @@
-import { createClient } from "@/utils/supabase/server";
+import { auth as clerkAuth, currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 
 export interface AppUser {
@@ -16,43 +16,57 @@ export interface AppSession {
 }
 
 /**
- * Server-side session helper — drop-in replacement for NextAuth's auth().
+ * Server-side session helper backed by Clerk.
  * Returns null when unauthenticated; AppSession otherwise.
- * All 28 callsites use session.user.id which maps to the Prisma User id (cuid).
+ * All callsites import { auth } from "@/lib/auth" — unchanged.
  */
 export async function auth(): Promise<AppSession | null> {
   try {
-    const supabase = await createClient();
+    const { userId } = await clerkAuth();
+    if (!userId) return null;
 
-    // getUser() validates the JWT against Supabase's auth server — reliable in
-    // Node.js runtime (server components, route handlers). Falls back to
-    // getSession() which handles token refresh via the refresh token cookie.
-    let authId: string | undefined;
-
-    const { data: userData } = await supabase.auth.getUser();
-    if (userData?.user) {
-      authId = userData.user.id;
-    } else {
-      const { data: sessionData } = await supabase.auth.getSession();
-      authId = sessionData?.session?.user?.id;
-    }
-
-    if (!authId) return null;
-
-    const user = await prisma.user.findUnique({
-      where: { authId },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        role: true,
-        walletBalance: true,
-        authId: true,
-      },
+    // Find Prisma user by Clerk ID
+    let user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+      select: { id: true, name: true, email: true, phone: true, role: true, walletBalance: true, authId: true },
     });
 
-    if (!user || !user.authId) return null;
+    if (!user) {
+      // First login — try to link by email to an existing Prisma user (migration path)
+      const clerkUser = await currentUser();
+      const email = clerkUser?.emailAddresses[0]?.emailAddress ?? null;
+
+      if (email) {
+        const existing = await prisma.user.findFirst({ where: { email } });
+        if (existing) {
+          user = await prisma.user.update({
+            where: { id: existing.id },
+            data: { clerkId: userId },
+            select: { id: true, name: true, email: true, phone: true, role: true, walletBalance: true, authId: true },
+          });
+        }
+      }
+
+      // Brand-new Clerk user with no Prisma record — auto-create minimal profile
+      if (!user && clerkUser) {
+        const phone =
+          clerkUser.phoneNumbers[0]?.phoneNumber ||
+          `clerk_${userId}`;
+        user = await prisma.user.create({
+          data: {
+            clerkId: userId,
+            name: clerkUser.fullName || email || "User",
+            phone,
+            email,
+            role: "USER",
+            referralCode: `CLK${userId.slice(-6).toUpperCase()}`,
+          },
+          select: { id: true, name: true, email: true, phone: true, role: true, walletBalance: true, authId: true },
+        });
+      }
+    }
+
+    if (!user) return null;
 
     return {
       user: {
@@ -62,7 +76,7 @@ export async function auth(): Promise<AppSession | null> {
         phone: user.phone,
         role: user.role,
         walletBalance: Number(user.walletBalance),
-        authId: user.authId,
+        authId: user.authId ?? userId,
       },
     };
   } catch {

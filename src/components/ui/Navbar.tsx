@@ -8,7 +8,7 @@ import Image from "next/image";
 import { ThemeToggle } from "./ThemeToggle";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { createClient } from "@/utils/supabase/client";
+import { useUser } from "@clerk/nextjs";
 import { DashboardSidebar } from "./DashboardSidebar";
 
 
@@ -34,33 +34,20 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
-  const [authed, setAuthed] = useState(false);
+  const { isSignedIn } = useUser();
+  const authed = !!isSignedIn;
   const [isAdmin, setIsAdmin] = useState(false);
   const compact = isDashboardPage(pathname);
 
   useEffect(() => {
-    const supabase = createClient();
-    (async () => {
-      const { data } = await supabase.auth.getUser();
-      const authed = !!data.user;
-      setAuthed(authed);
-      if (authed) {
-        const me = await fetch("/api/auth/me").then(r => r.json()).catch(() => ({}));
-        setIsAdmin(me?.user?.role === "ADMIN");
-      }
-    })();
-    const { data: sub } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      const authed = !!session?.user;
-      setAuthed(authed);
-      if (authed) {
-        const me = await fetch("/api/auth/me").then(r => r.json()).catch(() => ({}));
-        setIsAdmin(me?.user?.role === "ADMIN");
-      } else {
-        setIsAdmin(false);
-      }
-    });
-    return () => sub.subscription.unsubscribe();
-  }, []);
+    if (isSignedIn) {
+      fetch("/api/auth/me").then(r => r.json()).then(d => {
+        setIsAdmin(d?.user?.role === "ADMIN");
+      }).catch(() => setIsAdmin(false));
+    } else {
+      setIsAdmin(false);
+    }
+  }, [isSignedIn]);
 
   // Close sidebars on route change
   useEffect(() => {
@@ -128,7 +115,7 @@ export function Navbar() {
             ) : (
               <>
                 <Link
-                  href="/auth/login"
+                  href="/sign-in"
                   className="liquid-glass rounded-full px-4 py-2 text-sm font-medium font-barlow text-text-primary transition-colors hover:text-accent-primary"
                 >
                   Sign In
@@ -198,7 +185,7 @@ export function Navbar() {
                   ) : (
                     <>
                       <Link
-                        href="/auth/login"
+                        href="/sign-in"
                         className="liquid-glass flex-1 rounded-full px-4 py-2.5 text-center text-sm font-medium font-barlow text-text-primary"
                         onClick={() => setOpen(false)}
                       >

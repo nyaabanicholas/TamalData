@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "Your Storefront" };
 
 export default async function StorefrontPage() {
   const session = await auth();
-  if (!session?.user) redirect("/auth/login");
+  if (!session?.user) redirect("/sign-in");
 
   const storefront = await prisma.resellerStorefront.findUnique({
     where: { userId: session.user.id },

@@ -10,7 +10,7 @@ export const metadata = { title: "Saved Numbers" };
 
 export default async function SavedNumbersPage() {
   const session = await auth();
-  if (!session?.user) redirect("/auth/login?from=/dashboard/saved-numbers");
+  if (!session?.user) redirect("/sign-in?from=/dashboard/saved-numbers");
 
   const saved = await prisma.savedNumber.findMany({
     where: { userId: session.user.id },

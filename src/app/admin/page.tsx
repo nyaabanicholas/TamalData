@@ -13,7 +13,7 @@ export const metadata: Metadata = { title: "Admin Dashboard" };
 export default async function AdminPage() {
   const session = await auth();
   const role = (session?.user as never as { role?: string } | undefined)?.role;
-  if (!session || role !== "ADMIN") redirect("/auth/login");
+  if (!session || role !== "ADMIN") redirect("/sign-in");
 
   const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());

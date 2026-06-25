@@ -18,7 +18,7 @@ export default async function ResellerOrdersPage({
   searchParams: { page?: string; status?: string };
 }) {
   const session = await auth();
-  if (!session?.user) redirect("/auth/login");
+  if (!session?.user) redirect("/sign-in");
 
   const page = Math.max(1, parseInt(searchParams.page ?? "1"));
   const status = searchParams.status;

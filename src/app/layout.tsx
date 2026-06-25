@@ -1,3 +1,4 @@
+import {ClerkProvider} from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk, JetBrains_Mono, Fauna_One, Barlow } from "next/font/google";
 import dynamic from "next/dynamic";
@@ -101,24 +102,26 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className="bg-bg-base text-text-primary antialiased">
-        <Providers>
+        <ClerkProvider>
+          <Providers>
           <Preloader />
           {/* Global orb layer — fixed between body bg and content */}
           <div
-            className="fixed inset-0 pointer-events-none overflow-hidden"
-            style={{ zIndex: 0, willChange: "transform", contain: "layout paint" }}
-            aria-hidden="true"
+          className="fixed inset-0 pointer-events-none overflow-hidden"
+          style={{ zIndex: 0, willChange: "transform", contain: "layout paint" }}
+          aria-hidden="true"
           >
-            <div className="global-orb global-orb-1" />
-            <div className="global-orb global-orb-2" />
-            <div className="global-orb global-orb-accent" />
+          <div className="global-orb global-orb-1" />
+          <div className="global-orb global-orb-2" />
+          <div className="global-orb global-orb-accent" />
           </div>
           <Navbar />
           {children}
           <FooterWrapper />
           <WhatsAppFAB />
           <TawkToWidget />
-        </Providers>
+          </Providers>
+        </ClerkProvider>
       </body>
     </html>
   );

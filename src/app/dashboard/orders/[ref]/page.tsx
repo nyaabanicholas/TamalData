@@ -42,7 +42,7 @@ function Row({ label, value, mono = false }: { label: string; value: string; mon
 
 export default async function OrderDetailPage({ params }: { params: { ref: string } }) {
   const session = await auth();
-  if (!session?.user) redirect(`/auth/login?from=/dashboard/orders/${params.ref}`);
+  if (!session?.user) redirect(`/sign-in?from=/dashboard/orders/${params.ref}`);
 
   const order = await prisma.order.findUnique({ where: { reference: params.ref } });
 

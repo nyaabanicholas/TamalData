@@ -13,7 +13,7 @@ export const metadata: Metadata = { title: "Reseller Portal" };
 
 export default async function ResellerPage() {
   const session = await auth();
-  if (!session?.user) redirect("/auth/login?from=/reseller");
+  if (!session?.user) redirect("/sign-in?from=/reseller");
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },

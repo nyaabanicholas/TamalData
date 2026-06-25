@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default async function OnboardingPage() {
   const session = await auth();
-  if (!session?.user) redirect("/auth/login?from=/reseller/onboarding");
+  if (!session?.user) redirect("/sign-in?from=/reseller/onboarding");
 
   // Check if user is already a reseller with storefront
   const user = await prisma.user.findUnique({

@@ -18,7 +18,7 @@ const NETWORK_COLORS: Record<Network, string> = {
 
 export default async function CustomersPage() {
   const session = await auth();
-  if (!session?.user) redirect("/auth/login?from=/reseller/customers");
+  if (!session?.user) redirect("/sign-in?from=/reseller/customers");
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },

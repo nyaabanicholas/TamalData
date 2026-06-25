@@ -18,7 +18,7 @@ export const metadata: Metadata = { title: "Earnings & Payouts" };
 
 export default async function EarningsPage() {
   const session = await auth();
-  if (!session?.user) redirect("/auth/login");
+  if (!session?.user) redirect("/sign-in");
 
   const [user, payouts, settings] = await Promise.all([
     prisma.user.findUnique({

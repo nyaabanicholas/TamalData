@@ -12,7 +12,7 @@ import type { LucideIcon } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
-import { createClient } from "@/utils/supabase/client";
+import { useUser, useClerk } from "@clerk/nextjs";
 
 interface SidebarItem {
   href: string;
@@ -145,21 +145,19 @@ interface DashboardSidebarProps {
 // ─── Component ────────────────────────────────────────────────────────
 
 export function DashboardSidebar({ open, onClose, pathname }: DashboardSidebarProps) {
-  const [authed, setAuthed] = useState(false);
+  const { isSignedIn } = useUser();
+  const { signOut } = useClerk();
+  const authed = !!isSignedIn;
   const [userName, setUserName] = useState<string | null>(null);
   const items = getSidebarItems(pathname);
 
   useEffect(() => {
-    const supabase = createClient();
-    (async () => {
-      const { data } = await supabase.auth.getUser();
-      if (data?.user) {
-        setAuthed(true);
-        const me = await fetch("/api/auth/me").then(r => r.json()).catch(() => ({}));
-        setUserName(me?.user?.name || me?.user?.phone || data.user.email || "User");
-      }
-    })();
-  }, []);
+    if (isSignedIn) {
+      fetch("/api/auth/me").then(r => r.json()).then(d => {
+        setUserName(d?.user?.name || d?.user?.phone || "User");
+      }).catch(() => {});
+    }
+  }, [isSignedIn]);
 
   const isActive = (href: string) => {
     if (href === "/dashboard" || href === "/reseller" || href === "/admin") {
@@ -325,16 +323,16 @@ export function DashboardSidebar({ open, onClose, pathname }: DashboardSidebarPr
             <div className="shrink-0 border-t border-color-border/20 px-4 py-4 flex items-center justify-between">
               <ThemeToggle />
               {authed ? (
-                <Link
-                  href="/api/auth/logout"
+                <button
+                  onClick={() => signOut({ redirectUrl: "/" })}
                   className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium font-barlow text-color-error hover:bg-color-error/10 transition-all duration-200"
                 >
                   <LogOut className="h-4 w-4" strokeWidth={1.5} />
                   Sign Out
-                </Link>
+                </button>
               ) : (
                 <Link
-                  href="/auth/login"
+                  href="/sign-in"
                   className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium font-barlow text-accent-primary hover:bg-accent-primary/10 transition-all duration-200"
                 >
                   <User className="h-4 w-4" strokeWidth={1.5} />

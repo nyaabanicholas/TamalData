@@ -83,7 +83,7 @@ export default function RegisterPage() {
 
       if (signInError) {
         // Registration succeeded but auto-login failed — send them to login page
-        router.push("/auth/login?registered=1");
+        router.push("/sign-in?registered=1");
         router.refresh();
         return;
       }
@@ -180,7 +180,7 @@ export default function RegisterPage() {
 
           <p className="text-center text-sm text-text-muted mt-5 font-barlow">
             Have an account?{" "}
-            <Link href="/auth/login" className="text-accent-primary hover:underline font-semibold">Sign in</Link>
+            <Link href="/sign-in" className="text-accent-primary hover:underline font-semibold">Sign in</Link>
           </p>
         </div>
       </motion.div>

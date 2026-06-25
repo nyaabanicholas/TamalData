@@ -38,7 +38,7 @@ export default function LoginPage() {
     // Sign in via the server route. It sets the Supabase auth cookies on the
     // HTTP response itself. After the response is received, we verify the
     // session by calling /api/auth/me, then navigate once confirmed.
-    const res = await fetch("/api/auth/login", {
+    const res = await fetch("/api/sign-in", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ login: data.login, password: data.password }),

@@ -7,7 +7,7 @@ import { GlassPanel } from "@/components/ui/GlassPanel";
 
 export default async function ResellerLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
-  if (!session?.user) redirect("/auth/login?from=/reseller");
+  if (!session?.user) redirect("/sign-in?from=/reseller");
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },

@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Referrals" };
 
 export default async function ReferralsPage() {
   const session = await auth();
-  if (!session?.user) redirect("/auth/login");
+  if (!session?.user) redirect("/sign-in");
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },

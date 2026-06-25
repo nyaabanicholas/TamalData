@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import Link from "next/link";
-import { LogOut } from "lucide-react";
 import type { Metadata } from "next";
+import { AdminSignOutButton } from "@/components/ui/AdminSignOutButton";
 
 export const metadata: Metadata = { title: { default: "Admin", template: "%s — Admin | TamalData" } };
 
@@ -21,7 +21,7 @@ const ADMIN_NAV = [
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
   const role = (session?.user as never as { role?: string } | undefined)?.role;
-  if (!session || role !== "ADMIN") redirect("/auth/login");
+  if (!session || role !== "ADMIN") redirect("/sign-in");
 
   return (
     <div className="min-h-screen bg-bg-base flex">
@@ -44,13 +44,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </nav>
         {/* Sign Out Button */}
         <div className="p-3 border-t border-color-border/40">
-          <Link
-            href="/api/auth/logout"
-            className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-color-error hover:text-color-error hover:bg-color-error/10 transition-all duration-150"
-          >
-            <LogOut className="h-4 w-4" />
-            Sign Out
-          </Link>
+          <AdminSignOutButton className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-color-error hover:text-color-error hover:bg-color-error/10 transition-all duration-150 w-full" />
         </div>
       </aside>
 
@@ -75,13 +69,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       
       {/* Sign Out Button - also in header for better visibility */}
       <div className="fixed top-4 right-4 z-50 lg:hidden">
-        <Link
-          href="/api/auth/logout"
-          className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-color-error hover:text-color-error hover:bg-color-error/10 transition-all duration-150 liquid-glass"
-        >
-          <LogOut className="h-4 w-4" />
-          Sign Out
-        </Link>
+        <AdminSignOutButton className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-color-error hover:text-color-error hover:bg-color-error/10 transition-all duration-150 liquid-glass" />
       </div>
     </div>
   );

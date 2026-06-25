@@ -10,11 +10,12 @@ datasource db {
 
 model User {
   id             String              @id @default(cuid())
+  clerkId        String?             @unique
   authId         String?             @unique
   name           String
   phone          String              @unique
   email          String?             @unique
-  passwordHash   String
+  passwordHash   String?
   role           Role                @default(USER)
   resellerStatus ResellerStatus?
   walletBalance  Decimal             @default(0) @db.Decimal(10, 2)

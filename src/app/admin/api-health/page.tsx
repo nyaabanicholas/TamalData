@@ -21,7 +21,7 @@ async function getApiHealth() {
 export default async function ApiHealthPage() {
   const session = await auth();
   const role = (session?.user as never as { role?: string } | undefined)?.role;
-  if (!session || role !== "ADMIN") redirect("/auth/login");
+  if (!session || role !== "ADMIN") redirect("/sign-in");
 
   const [health, failedOrders, settings] = await Promise.all([
     getApiHealth(),
