@@ -1,7 +1,7 @@
 import {ClerkProvider} from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk, JetBrains_Mono, Fauna_One, Barlow } from "next/font/google";
-import dynamic from "next/dynamic";
+import nextDynamic from "next/dynamic";
 import { Providers } from "@/components/providers";
 import { Navbar } from "@/components/ui/Navbar";
 import { Preloader } from "@/components/ui/Preloader";
@@ -9,7 +9,7 @@ import { WhatsAppFAB } from "@/components/ui/WhatsAppFAB";
 import { FooterWrapper } from "@/components/ui/FooterWrapper";
 import "./globals.css";
 
-const TawkToWidget = dynamic(
+const TawkToWidget = nextDynamic(
   () => import("@/components/ui/TawkToWidget").then((m) => m.TawkToWidget),
   { ssr: false }
 );
