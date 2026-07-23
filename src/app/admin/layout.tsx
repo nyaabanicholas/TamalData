@@ -7,15 +7,16 @@ import { AdminSignOutButton } from "@/components/ui/AdminSignOutButton";
 export const metadata: Metadata = { title: { default: "Admin", template: "%s — Admin | TamalData" } };
 
 const ADMIN_NAV = [
-  { href: "/admin",             label: "Overview",     icon: "📊" },
-  { href: "/admin/orders",      label: "Orders",       icon: "📦" },
-  { href: "/admin/payouts",     label: "Payouts",      icon: "💸" },
-  { href: "/admin/transactions",label: "Transactions", icon: "🪙" },
-  { href: "/admin/resellers",   label: "Resellers",    icon: "🤝" },
-  { href: "/admin/users",       label: "Users",        icon: "👥" },
-  { href: "/admin/pricing",     label: "Pricing",      icon: "💰" },
-  { href: "/admin/api-health",  label: "API Health",   icon: "🔌" },
-  { href: "/admin/settings",    label: "Settings",     icon: "⚙️" },
+  { href: "/admin",              label: "Overview",      icon: "📊" },
+  { href: "/admin/orders",       label: "Orders",        icon: "📦" },
+  { href: "/admin/fulfillment",  label: "Fulfillment",   icon: "🔄" },
+  { href: "/admin/payouts",      label: "Payouts",       icon: "💸" },
+  { href: "/admin/transactions", label: "Transactions",  icon: "🪙" },
+  { href: "/admin/resellers",    label: "Resellers",     icon: "🤝" },
+  { href: "/admin/users",        label: "Users",         icon: "👥" },
+  { href: "/admin/pricing",      label: "Pricing",       icon: "💰" },
+  { href: "/admin/api-health",   label: "API Health",    icon: "🔌" },
+  { href: "/admin/settings",     label: "Settings",      icon: "⚙️" },
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {

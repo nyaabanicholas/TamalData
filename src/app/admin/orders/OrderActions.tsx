@@ -4,12 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 const ACTIONS: Record<string, { label: string; color: string; next: string }[]> = {
-  PENDING:           [{ label: "Mark Failed",   color: "#ef4444", next: "FAILED" }],
-  PAYMENT_CONFIRMED: [{ label: "Mark Failed",   color: "#ef4444", next: "FAILED" }],
-  PROCESSING:        [{ label: "Mark Delivered",color: "#10b981", next: "DELIVERED" }, { label: "Mark Failed", color: "#ef4444", next: "FAILED" }],
-  DELIVERED:         [{ label: "Refund",        color: "#f59e0b", next: "REFUNDED" }],
-  FAILED:            [{ label: "Refund",        color: "#f59e0b", next: "REFUNDED" }],
-  REFUNDED:          [],
+  PENDING:              [{ label: "Mark Failed",       color: "#ef4444", next: "FAILED" }],
+  PAYMENT_CONFIRMED:    [{ label: "Mark Failed",       color: "#ef4444", next: "FAILED" }],
+  PENDING_FULFILLMENT:  [{ label: "Mark Delivered",    color: "#10b981", next: "DELIVERED" }, { label: "Mark Failed", color: "#ef4444", next: "FAILED" }],
+  PROCESSING:           [{ label: "Mark Delivered",    color: "#10b981", next: "DELIVERED" }, { label: "Mark Failed", color: "#ef4444", next: "FAILED" }],
+  DELIVERED:            [{ label: "Refund",            color: "#f59e0b", next: "REFUNDED" }],
+  FAILED:               [{ label: "Refund",            color: "#f59e0b", next: "REFUNDED" }],
+  REFUNDED:             [],
 };
 
 export function OrderActions({ orderId, status }: { orderId: string; status: string }) {

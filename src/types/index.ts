@@ -2,6 +2,7 @@ export type Network = "MTN" | "TELECEL" | "AIRTELTIGO";
 export type OrderStatus =
   | "PENDING"
   | "PAYMENT_CONFIRMED"
+  | "PENDING_FULFILLMENT"
   | "PROCESSING"
   | "DELIVERED"
   | "FAILED"

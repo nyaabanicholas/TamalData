@@ -31,6 +31,7 @@ export default async function AdminPage() {
     revenueMonth,
     pendingPayouts,
     pendingResellers,
+    pendingFulfillment,
     siteSettings,
   ] = await Promise.all([
     prisma.order.count({ where: { createdAt: { gte: todayStart } } }),
@@ -70,6 +71,7 @@ export default async function AdminPage() {
     }),
     prisma.payoutRequest.count({ where: { status: "PENDING" } }),
     prisma.user.count({ where: { role: "RESELLER", resellerStatus: "PENDING_APPROVAL" } }),
+    prisma.order.count({ where: { status: "PENDING_FULFILLMENT" } }),
     prisma.siteSettings.findUnique({ where: { id: "singleton" } }),
   ]);
 
@@ -96,6 +98,7 @@ export default async function AdminPage() {
           <KpiCard label="Resellers" value={String(totalResellers)} accent />
           <KpiCard label="Wallet Funds" value={formatGHS(Number(totalWalletFunds._sum.walletBalance ?? 0))} />
           <KpiCard label="Failed Today" value={String(failedToday)} warn={failedToday > 0} />
+          <KpiCard label="Pending Fulfillment" value={String(pendingFulfillment)} warn={pendingFulfillment > 0} />
           <KpiCard label="Pending Payouts" value={String(pendingPayouts)} warn={pendingPayouts > 0} />
           <KpiCard label="Pending Resellers" value={String(pendingResellers)} warn={pendingResellers > 0} />
         </div>

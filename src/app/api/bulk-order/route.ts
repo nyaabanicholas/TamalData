@@ -1,7 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { bulkPurchase, toDatamartNetwork, checkDataMartBalance, parseCapacity } from "@/lib/datamart";
 import { getEffectivePrice, generateOrderReference } from "@/lib/markup";
 import { getBundleById } from "@/data/bundles";
 import { orderRateLimit, getClientIp } from "@/lib/ratelimit";
@@ -79,16 +78,6 @@ export async function POST(request: NextRequest) {
   );
   const total = priced.reduce((sum, p) => sum + p.sellPrice, 0);
 
-  // Check DataMart balance for total amount before debiting wallet
-  const totalCostPrice = priced.reduce((sum, p) => sum + p.costPrice, 0);
-  const dataMartBalanceOk = await checkDataMartBalance(totalCostPrice);
-  if (!dataMartBalanceOk) {
-    return NextResponse.json(
-      { error: "Insufficient DataMart wallet balance for bulk order. Please try again later." },
-      { status: 503 },
-    );
-  }
-
   // Atomically debit the wallet, log the txn, and create all order rows.
   let orderRows: { ref: string; phone: string; bundleId: string }[];
   try {
@@ -165,7 +154,7 @@ export async function POST(request: NextRequest) {
             sellPrice: p.sellPrice,
             paymentMethod: "WALLET",
             paymentRef: batchReference,
-            status: "PAYMENT_CONFIRMED",
+            status: "PENDING_FULFILLMENT",
           },
         });
         rows.push({ ref: p.ref, phone: p.phone, bundleId: p.bundleId });
@@ -187,73 +176,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Could not process payment." }, { status: 500 });
   }
 
-  const refundWallet = async (reason: string) => {
-    await prisma.$transaction(async (tx) => {
-      await tx.user.update({
-        where: { id: userId },
-        data: { walletBalance: { increment: total } },
-      });
-
-      await tx.walletTransaction.create({
-        data: {
-          userId,
-          type: "CREDIT",
-          amount: total,
-          description: `Refund — failed bulk order ${batchReference}`,
-          orderId: batchReference,
-        },
-      });
-
-      for (const o of orderRows) {
-        await tx.order.update({
-          where: { reference: o.ref },
-          data: { status: "FAILED", failureReason: reason },
-        });
-      }
-    });
-  };
-
-  try {
-    const dmNetwork = toDatamartNetwork(network as Network);
-    const result = await bulkPurchase({
-      orders: recipients.map((r) => ({
-        phoneNumber: r.phone,
-        network: dmNetwork,
-        capacity: parseCapacity(r.bundleSize),
-        ref: r.bundleId,
-      })),
-      reference: batchReference,
-    });
-
-    if (result.summary.failed > 0 || result.summary.invalid > 0) {
-      await refundWallet(`Bulk order: ${result.summary.failed} failed, ${result.summary.invalid} invalid`);
-      return NextResponse.json(
-        { error: `Bulk order had failures — wallet refunded. ${result.summary.failed} failed, ${result.summary.invalid} invalid.` },
-        { status: 502 }
-      );
-    }
-
-    await Promise.all(
-      orderRows.map((o) =>
-        prisma.order.update({
-          where: { reference: o.ref },
-          data: { status: "DELIVERED", datamartRef: batchReference, deliveredAt: new Date() },
-        })
-      )
-    );
-
-    return NextResponse.json({
-      success: true,
-      batchReference,
-      results: result.results ?? [],
-      count: recipients.length,
-    });
-  } catch (error) {
-    await refundWallet("DataMart API error");
-    console.error("[/api/bulk-order] DataMart error:", error);
-    return NextResponse.json(
-      { error: "Could not complete bulk order — wallet refunded. Please try again." },
-      { status: 502 }
-    );
-  }
+  // Wallet debited, all orders created with status PENDING_FULFILLMENT.
+  // Admin will manually purchase from DataMart and mark each as delivered.
+  return NextResponse.json({
+    success: true,
+    batchReference,
+    count: recipients.length,
+    status: "PENDING_FULFILLMENT",
+    display_text: "Bulk order created. Admin will process the data shortly.",
+  });
 }

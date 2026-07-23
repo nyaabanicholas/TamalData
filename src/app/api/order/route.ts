@@ -1,13 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { placeOrder, toDatamartNetwork, checkDataMartBalance, parseCapacity } from "@/lib/datamart";
 import { initiateCharge, PAYSTACK_TEST_NUMBERS, isTestMode } from "@/lib/paystack";
 import { getEffectivePrice, generateOrderReference } from "@/lib/markup";
 import { getBundleById } from "@/data/bundles";
 import { orderRateLimit, getClientIp } from "@/lib/ratelimit";
 import { sendSMS, SMS_TEMPLATES } from "@/lib/arkesel";
-import { notifyAdminLowBalance } from "@/lib/notify";
 import type { Network } from "@/types";
 import type { PaymentMethod } from "@prisma/client";
 
@@ -200,7 +198,7 @@ export async function POST(request: NextRequest) {
             sellPrice,
             paymentMethod: "WALLET",
             paymentRef: reference,
-            status: "PAYMENT_CONFIRMED",
+            status: "PENDING_FULFILLMENT",
           },
         });
 
@@ -229,97 +227,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Could not process wallet payment." }, { status: 500 });
     }
 
-    // Payment is confirmed (wallet debited). If the DataMart account is not yet
-    // funded, DON'T fail/refund — leave the order PAYMENT_CONFIRMED so it stays
-    // queued and gets delivered once DataMart is topped up. Payment goes through.
-    const dataMartBalanceOk = await checkDataMartBalance(costPrice);
-    if (!dataMartBalanceOk) {
-      // Alert admin to top up DataMart wallet
-      await notifyAdminLowBalance(reference, costPrice);
-      return NextResponse.json({
-        reference,
-        success: true,
-        status: "PAYMENT_CONFIRMED",
-        display_text:
-          "Payment confirmed. Your data is queued and will be delivered shortly.",
-      });
-    }
-
-    // Payment confirmed (from wallet) → deliver via DataMart now.
-    try {
-      await prisma.order.update({ where: { reference }, data: { status: "PROCESSING" } });
-      const result = await placeOrder({
-        network: toDatamartNetwork(net),
-        phoneNumber: phone,
-        capacity: parseCapacity(bundleSize),
-        gateway: "wallet",
-        reference,
-      });
-
-      if (result.orderStatus !== "completed") throw new Error("DataMart rejected order");
-
-      await prisma.order.update({
-        where: { reference },
-        data: {
-          status: "DELIVERED",
-          datamartRef: result.orderReference,
-          deliveredAt: new Date(),
-        },
-      });
-      await sendSMS(phone, SMS_TEMPLATES.orderDelivered(bundleSize, net)).catch(() => null);
-
-      return NextResponse.json({ reference, success: true, status: "DELIVERED" });
-    } catch (error) {
-      // If DataMart is simply underfunded, keep the order PAYMENT_CONFIRMED
-      // (queued) and DON'T refund — payment stays good, delivery happens once
-      // the DataMart account is topped up.
-      const msg = error instanceof Error ? error.message : "";
-      if (/insufficient/i.test(msg) && /balance/i.test(msg)) {
-        await prisma.order.update({
-          where: { reference },
-          data: { status: "PAYMENT_CONFIRMED" },
-        });
-        await notifyAdminLowBalance(reference, costPrice);
-        return NextResponse.json({
-          reference,
-          success: true,
-          status: "PAYMENT_CONFIRMED",
-          display_text:
-            "Payment confirmed. Your data is queued and will be delivered shortly.",
-        });
-      }
-      // Delivery failed after debit → refund the wallet so the user isn't charged.
-      // Use transaction with locking to prevent race conditions during refund
-      await prisma.$transaction(async (tx) => {
-        await tx.order.update({
-          where: { reference },
-          data: {
-            status: "FAILED",
-            failureReason: error instanceof Error ? error.message : "DataMart error",
-          },
-        });
-
-        await tx.user.update({
-          where: { id: userId },
-          data: { walletBalance: { increment: sellPrice } },
-        });
-
-        await tx.walletTransaction.create({
-          data: {
-            userId,
-            type: "CREDIT",
-            amount: sellPrice,
-            description: `Refund — failed order ${reference}`,
-            orderId: reference,
-          },
-        });
-      });
-      console.error("[/api/order] wallet delivery error:", error);
-      return NextResponse.json(
-        { error: "Delivery failed — your wallet was refunded. Please try again." },
-        { status: 502 },
-      );
-    }
+    // Wallet debited, order created with status PENDING_FULFILLMENT.
+    // Admin will manually purchase from DataMart and mark as delivered.
+    return NextResponse.json({
+      reference,
+      success: true,
+      status: "PENDING_FULFILLMENT",
+      display_text: "Payment confirmed. Admin will process your data shortly.",
+    });
   }
 
   // ─── MOMO path: collect payment via Paystack FIRST; webhook delivers ────────
@@ -391,56 +306,18 @@ export async function POST(request: NextRequest) {
     });
 
     // In test mode, auto-confirm the order since the Paystack webhook
-    // won't fire (no actual phone prompt to approve). This unblocks
-    // end-to-end testing: the timeline will show "Payment Confirmed"
-    // and data will be delivered via DataMart immediately.
+    // won't fire (no actual phone prompt to approve).
     if (isTestMode() && charge.status) {
       await prisma.order.update({
         where: { reference },
-        data: { status: "PAYMENT_CONFIRMED", paymentRef: reference },
+        data: { status: "PENDING_FULFILLMENT", paymentRef: reference },
       });
 
-      // Proceed with DataMart delivery
-      await prisma.order.update({
-        where: { reference },
-        data: { status: "PROCESSING" },
-      });
-
-      const dataMartBalanceOk = await checkDataMartBalance(costPrice);
-      if (dataMartBalanceOk) {
-        const dmResult = await placeOrder({
-          network: toDatamartNetwork(net),
-          phoneNumber: phone,
-          capacity: parseCapacity(bundleSize),
-          gateway: "wallet",
-          reference,
-        });
-
-        if (dmResult.orderStatus === "completed") {
-          await prisma.order.update({
-            where: { reference },
-            data: {
-              status: "DELIVERED",
-              datamartRef: dmResult.orderReference,
-              deliveredAt: new Date(),
-            },
-          });
-
-          return NextResponse.json({
-            reference,
-            success: true,
-            status: "DELIVERED",
-            display_text: "Test payment successful! Data has been delivered.",
-          });
-        }
-      }
-
-      // If datamart delivery fails, keep at PAYMENT_CONFIRMED
       return NextResponse.json({
         reference,
         success: true,
-        status: "PAYMENT_CONFIRMED",
-        display_text: "Test payment confirmed. Processing delivery...",
+        status: "PENDING_FULFILLMENT",
+        display_text: "Test payment successful! Admin will process the data shortly.",
       });
     }
 

@@ -1,10 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyWebhookSignature, type PaystackWebhookEvent } from "@/lib/paystack";
-import { placeOrder, toDatamartNetwork, checkDataMartBalance, parseCapacity } from "@/lib/datamart";
 import type { Network } from "@/types";
 import { sendSMS, SMS_TEMPLATES } from "@/lib/arkesel";
-import { notifyAdminLowBalance } from "@/lib/notify";
 import { redis } from "@/lib/redis";
 
 // Configuration for webhook idempotency
@@ -150,95 +148,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true });
   }
 
-  // Check DataMart wallet balance before placing order
-  const dataMartBalanceOk = await checkDataMartBalance(Number(order.costPrice));
-  if (!dataMartBalanceOk) {
-    console.error(`[webhook/paystack] DataMart balance insufficient for order ${reference}`);
-    // Keep order at PAYMENT_CONFIRMED so it can be retried once wallet is topped up
-    await prisma.order.update({
-      where: { reference },
-      data: { status: "PAYMENT_CONFIRMED", paymentRef: reference },
-    });
-    // Alert admin to top up DataMart wallet
-    await notifyAdminLowBalance(reference, Number(order.costPrice));
-    await sendSMS(
-      order.recipientPhone,
-      `Payment confirmed for order ${reference}. Your data bundle will be delivered shortly. Thank you for your patience.`
-    );
-    return NextResponse.json({ received: true });
-  }
-
-  // Mark payment confirmed
+  // Payment confirmed via Paystack — move to PENDING_FULFILLMENT.
+  // Admin will manually purchase from DataMart and mark as delivered.
   await prisma.order.update({
     where: { reference },
-    data: { status: "PAYMENT_CONFIRMED", paymentRef: reference },
+    data: { status: "PENDING_FULFILLMENT", paymentRef: reference },
   });
 
-  // Place data order with DataMart
-  try {
-    await prisma.order.update({
-      where: { reference },
-      data: { status: "PROCESSING" },
-    });
-
-    const dmResult = await placeOrder({
-      network: toDatamartNetwork(order.network as Network),
-      phoneNumber: order.recipientPhone,
-      capacity: parseCapacity(order.bundleSize),
-      gateway: "wallet",
-      reference,
-    });
-
-    if (dmResult.orderStatus === "completed") {
-      await prisma.order.update({
-        where: { reference },
-        data: {
-          status: "DELIVERED",
-          datamartRef: dmResult.orderReference,
-          deliveredAt: new Date(),
-        },
-      });
-
-      await sendSMS(
-        order.recipientPhone,
-        SMS_TEMPLATES.orderDelivered(order.bundleSize, order.network)
-      );
-
-      // ── Referral commission (5% of sell price to referrer) ───────────────
-      if (order.userId && order.user?.referredById) {
-        const commissionAmount = Number(order.sellPrice) * 0.05;
-        await prisma.$transaction([
-          prisma.user.update({
-            where: { id: order.user.referredById },
-            data: { walletBalance: { increment: commissionAmount } },
-          }),
-          prisma.walletTransaction.create({
-            data: {
-              userId: order.user.referredById,
-              type: "COMMISSION",
-              amount: commissionAmount,
-              description: `Referral commission — order ${reference}`,
-              orderId: reference,
-            },
-          }),
-        ]);
-      }
-    } else {
-      throw new Error("DataMart order failed — status: " + dmResult.orderStatus);
-    }
-  } catch (error) {
-    console.error("[webhook/paystack] DataMart order error:", error);
-
-    await prisma.order.update({
-      where: { reference },
-      data: {
-        status: "FAILED",
-        failureReason: error instanceof Error ? error.message : "DataMart error",
-      },
-    });
-
-    await sendSMS(order.recipientPhone, SMS_TEMPLATES.orderFailed(reference));
-  }
+  await sendSMS(
+    order.recipientPhone,
+    `Payment confirmed for order ${reference}. Your data bundle will be processed shortly.`
+  );
 
   return NextResponse.json({ received: true });
 }

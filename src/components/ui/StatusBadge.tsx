@@ -13,6 +13,10 @@ const STATUS_CONFIG: Record<
     label: "Payment Confirmed",
     className: "bg-color-warning/20 text-color-warning",
   },
+  PENDING_FULFILLMENT: {
+    label: "Awaiting Fulfillment",
+    className: "bg-accent-primary/20 text-accent-primary",
+  },
   PROCESSING: {
     label: "Processing",
     className: "bg-color-warning/20 text-color-warning",
