@@ -1,7 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyWebhookSignature, type PaystackWebhookEvent } from "@/lib/paystack";
-import { sendSMS } from "@/lib/arkesel";
+import { sendSMS, SMS_TEMPLATES } from "@/lib/arkesel";
+import { sendAdminNotification, orderNotificationHtml } from "@/lib/email";
 import { redis } from "@/lib/redis";
 
 // Configuration for webhook idempotency
@@ -153,6 +154,21 @@ export async function POST(request: NextRequest) {
     where: { reference },
     data: { status: "PENDING_FULFILLMENT", paymentRef: reference },
   });
+
+  // Notify admin of confirmed payment
+  sendAdminNotification(
+    `Payment Confirmed — ${reference}`,
+    orderNotificationHtml({
+      reference,
+      network: order.network,
+      bundleSize: order.bundleSize,
+      bundleValidity: "N/A",
+      recipientPhone: order.recipientPhone,
+      sellPrice: Number(order.sellPrice),
+      paymentMethod: "MOMO",
+      status: "PENDING_FULFILLMENT",
+    }),
+  );
 
   await sendSMS(
     order.recipientPhone,

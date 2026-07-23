@@ -25,7 +25,8 @@ export default async function AdminPage() {
     failedToday,
     totalUsers,
     totalResellers,
-    totalWalletFunds,
+    walletCredits,
+    walletDebits,
     ordersByNetwork,
     revenueWeek,
     revenueMonth,
@@ -49,7 +50,14 @@ export default async function AdminPage() {
     }),
     prisma.user.count(),
     prisma.user.count({ where: { role: "RESELLER" } }),
-    prisma.user.aggregate({ _sum: { walletBalance: true } }),
+    prisma.walletTransaction.aggregate({
+      _sum: { amount: true },
+      where: { type: "CREDIT" },
+    }),
+    prisma.walletTransaction.aggregate({
+      _sum: { amount: true },
+      where: { type: "DEBIT" },
+    }),
     prisma.order.groupBy({
       by: ["network"],
       _count: true,
@@ -96,7 +104,7 @@ export default async function AdminPage() {
           <KpiCard label="Revenue (30d)" value={formatGHS(Number(revenueMonth._sum.sellPrice ?? 0))} />
           <KpiCard label="Total Users" value={String(totalUsers)} />
           <KpiCard label="Resellers" value={String(totalResellers)} accent />
-          <KpiCard label="Wallet Funds" value={formatGHS(Number(totalWalletFunds._sum.walletBalance ?? 0))} />
+          <KpiCard label="Wallet Funds" value={formatGHS(Math.max(0, Number(walletCredits._sum.amount ?? 0) - Number(walletDebits._sum.amount ?? 0)))} />
           <KpiCard label="Failed Today" value={String(failedToday)} warn={failedToday > 0} />
           <KpiCard label="Pending Fulfillment" value={String(pendingFulfillment)} warn={pendingFulfillment > 0} />
           <KpiCard label="Pending Payouts" value={String(pendingPayouts)} warn={pendingPayouts > 0} />

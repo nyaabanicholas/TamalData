@@ -5,6 +5,7 @@ import { initiateCharge, PAYSTACK_TEST_NUMBERS, isTestMode } from "@/lib/paystac
 import { getEffectivePrice, generateOrderReference } from "@/lib/markup";
 import { getBundleById } from "@/data/bundles";
 import { orderRateLimit, getClientIp } from "@/lib/ratelimit";
+import { sendAdminNotification, orderNotificationHtml } from "@/lib/email";
 import type { Network } from "@/types";
 import type { PaymentMethod } from "@prisma/client";
 
@@ -228,6 +229,20 @@ export async function POST(request: NextRequest) {
 
     // Wallet debited, order created with status PENDING_FULFILLMENT.
     // Admin will manually purchase from DataMart and mark as delivered.
+    sendAdminNotification(
+      `New Wallet Order — ${reference}`,
+      orderNotificationHtml({
+        reference,
+        network: net,
+        bundleSize,
+        bundleValidity,
+        recipientPhone: phone,
+        sellPrice,
+        paymentMethod: "WALLET",
+        status: "PENDING_FULFILLMENT",
+      }),
+    );
+
     return NextResponse.json({
       reference,
       success: true,
@@ -295,6 +310,21 @@ export async function POST(request: NextRequest) {
       status: "PENDING",
     },
   });
+
+  // Notify admin of new order
+  sendAdminNotification(
+    `New MoMo Order — ${reference}`,
+    orderNotificationHtml({
+      reference,
+      network: net,
+      bundleSize,
+      bundleValidity,
+      recipientPhone: phone,
+      sellPrice,
+      paymentMethod: PAYMENT_METHOD[payerNetwork as Network],
+      status: "PENDING",
+    }),
+  );
 
   try {
     const charge = await initiateCharge({

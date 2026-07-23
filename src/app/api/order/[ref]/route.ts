@@ -1,6 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getOrderStatus } from "@/lib/datamart";
 import { maskPhone } from "@/lib/utils";
 
 const GHANA_PHONE = /^0[2345][0-9]{8}$/;
@@ -34,29 +33,6 @@ export async function GET(
 
   if (!order) {
     return NextResponse.json({ error: "Order not found" }, { status: 404 });
-  }
-  if (!order) {
-    return NextResponse.json({ error: "Order not found" }, { status: 404 });
-  }
-
-  // If still processing, check DataMart for live status
-  if (
-    order.datamartRef &&
-    (order.status === "PROCESSING" || order.status === "PAYMENT_CONFIRMED")
-  ) {
-    try {
-      const dmStatus = await getOrderStatus(order.datamartRef);
-      if (dmStatus.orderStatus === "completed") {
-        await prisma.order.update({
-          where: { reference: ref },
-          data: { status: "DELIVERED", deliveredAt: new Date() },
-        });
-        order.status = "DELIVERED";
-        order.deliveredAt = new Date();
-      }
-    } catch {
-      // Non-fatal — return what we have in DB
-    }
   }
 
   return NextResponse.json({
