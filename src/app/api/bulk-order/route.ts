@@ -79,9 +79,8 @@ export async function POST(request: NextRequest) {
   const total = priced.reduce((sum, p) => sum + p.sellPrice, 0);
 
   // Atomically debit the wallet, log the txn, and create all order rows.
-  let orderRows: { ref: string; phone: string; bundleId: string }[];
   try {
-    orderRows = await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx) => {
       const user = await tx.user.findUnique({
         where: { id: userId },
         select: { walletBalance: true },

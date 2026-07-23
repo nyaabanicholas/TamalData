@@ -5,7 +5,6 @@ import { initiateCharge, PAYSTACK_TEST_NUMBERS, isTestMode } from "@/lib/paystac
 import { getEffectivePrice, generateOrderReference } from "@/lib/markup";
 import { getBundleById } from "@/data/bundles";
 import { orderRateLimit, getClientIp } from "@/lib/ratelimit";
-import { sendSMS, SMS_TEMPLATES } from "@/lib/arkesel";
 import type { Network } from "@/types";
 import type { PaymentMethod } from "@prisma/client";
 

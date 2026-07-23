@@ -1,8 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyWebhookSignature, type PaystackWebhookEvent } from "@/lib/paystack";
-import type { Network } from "@/types";
-import { sendSMS, SMS_TEMPLATES } from "@/lib/arkesel";
+import { sendSMS } from "@/lib/arkesel";
 import { redis } from "@/lib/redis";
 
 // Configuration for webhook idempotency

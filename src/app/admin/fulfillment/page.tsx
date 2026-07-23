@@ -2,11 +2,9 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { GlassPanel } from "@/components/ui/GlassPanel";
-import { StatusBadge } from "@/components/ui/StatusBadge";
 import { formatGHS } from "@/lib/utils";
 import { FulfillActions } from "./FulfillActions";
 import type { Metadata } from "next";
-import type { OrderStatus } from "@/types";
 
 export const metadata: Metadata = { title: "Fulfillment — Admin" };
 export const dynamic = "force-dynamic";
