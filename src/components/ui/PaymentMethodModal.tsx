@@ -34,6 +34,7 @@ export function PaymentMethodModal({
   const [error, setError] = useState("");
   const [orderRef, setOrderRef] = useState<string | null>(null);
   const [orderStatus, setOrderStatus] = useState<string | null>(null);
+  const [payDisplayText, setPayDisplayText] = useState<string | null>(null);
   const [deliveryStatus, setDeliveryStatus] = useState("OPERATIONAL");
 
   const handlePay = async () => {
@@ -81,6 +82,7 @@ export function PaymentMethodModal({
       // Poll order status; only fire onSuccess once it's actually confirmed.
       setOrderRef(data.reference!);
       setOrderStatus(data.status ?? "PENDING");
+      setPayDisplayText(data.display_text ?? null);
       setStep("success");
     } catch (err) {
       setStep("error");
@@ -273,8 +275,15 @@ export function PaymentMethodModal({
                 <p className="text-text-muted text-xs font-barlow text-center">
                   {method === "WALLET"
                     ? "Data is being delivered to your number."
-                    : "Approve the prompt on your phone. We'll confirm automatically once Paystack notifies us — you can close this and check Track Order later."}
+                    : "We'll confirm automatically once Paystack notifies us — you can close this and check Track Order later."}
                 </p>
+                {method === "MOMO" && orderStatus === "PENDING" && payDisplayText && (
+                  <div className="w-full rounded-xl bg-accent-orange/10 border border-accent-orange/25 px-3 py-2.5">
+                    <p className="text-xs font-semibold text-accent-orange text-center font-barlow">
+                      {payDisplayText}
+                    </p>
+                  </div>
+                )}
                 {orderRef && (
                   <p className="text-[10px] font-mono text-text-muted">Ref: {orderRef}</p>
                 )}
