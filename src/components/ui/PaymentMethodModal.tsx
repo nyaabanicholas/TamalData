@@ -76,10 +76,10 @@ export function PaymentMethodModal({
         return;
       }
 
-      // MOMO — show awaiting state
+      // MOMO — show awaiting state; onSuccess fires only when user taps "Done"
+      // (charge is still PENDING here — the Paystack webhook confirms/delivers)
       setOrderRef(data.reference!);
       setStep("success");
-      onSuccess(data.reference!);
     } catch (err) {
       setStep("error");
       setError(err instanceof Error ? err.message : "Something went wrong");
