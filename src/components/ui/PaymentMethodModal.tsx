@@ -33,6 +33,7 @@ export function PaymentMethodModal({
   const [step, setStep] = useState<"select" | "processing" | "success" | "error">("select");
   const [error, setError] = useState("");
   const [orderRef, setOrderRef] = useState<string | null>(null);
+  const [orderStatus, setOrderStatus] = useState<string | null>(null);
   const [deliveryStatus, setDeliveryStatus] = useState("OPERATIONAL");
 
   const handlePay = async () => {
@@ -76,9 +77,10 @@ export function PaymentMethodModal({
         return;
       }
 
-      // MOMO — show awaiting state; onSuccess fires only when user taps "Done"
-      // (charge is still PENDING here — the Paystack webhook confirms/delivers)
+      // MOMO — charge is still PENDING here (webhook confirms/delivers async).
+      // Poll order status; only fire onSuccess once it's actually confirmed.
       setOrderRef(data.reference!);
+      setOrderStatus(data.status ?? "PENDING");
       setStep("success");
     } catch (err) {
       setStep("error");
@@ -94,6 +96,29 @@ export function PaymentMethodModal({
       .then(d => { if (d?.status) setDeliveryStatus(d.status); })
       .catch(() => {});
   }, []);
+
+  // Poll for webhook confirmation while a MOMO order sits in PENDING.
+  useEffect(() => {
+    if (step !== "success" || method !== "MOMO" || !orderRef || orderStatus !== "PENDING") return;
+
+    const interval = setInterval(() => {
+      fetch(`/api/order/${orderRef}`)
+        .then((r) => r.json())
+        .then((d: { status?: string }) => {
+          if (!d.status || d.status === "PENDING") return;
+          setOrderStatus(d.status);
+          if (d.status === "FAILED") {
+            setError("Payment was not approved or timed out.");
+            setStep("error");
+          } else {
+            onSuccess(orderRef);
+          }
+        })
+        .catch(() => {});
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [step, method, orderRef, orderStatus, onSuccess]);
 
   if (!mounted) return null;
 
@@ -233,24 +258,40 @@ export function PaymentMethodModal({
 
             {step === "success" && (
               <div className="flex flex-col items-center gap-3 py-6">
-                <CheckCircle2 className="h-12 w-12 text-color-success" strokeWidth={1.5} />
+                {method === "MOMO" && orderStatus === "PENDING" ? (
+                  <Loader2 className="h-12 w-12 text-accent-primary animate-spin" strokeWidth={1.5} />
+                ) : (
+                  <CheckCircle2 className="h-12 w-12 text-color-success" strokeWidth={1.5} />
+                )}
                 <p className="font-semibold text-text-primary">
-                  {method === "WALLET" ? "Payment successful!" : "Payment initiated!"}
+                  {method === "WALLET"
+                    ? "Payment successful!"
+                    : orderStatus === "PENDING"
+                    ? "Awaiting your approval..."
+                    : "Payment confirmed!"}
                 </p>
                 <p className="text-text-muted text-xs font-barlow text-center">
                   {method === "WALLET"
                     ? "Data is being delivered to your number."
-                    : "Approve the prompt on your phone to complete payment."}
+                    : "Approve the prompt on your phone. We'll confirm automatically once Paystack notifies us — you can close this and check Track Order later."}
                 </p>
                 {orderRef && (
                   <p className="text-[10px] font-mono text-text-muted">Ref: {orderRef}</p>
                 )}
                 <button
-                  onClick={() => { onSuccess(orderRef ?? ""); onClose(); }}
+                  onClick={() => {
+                    // Only report success once the webhook has actually confirmed —
+                    // for a still-PENDING MOMO order this just closes the modal;
+                    // the background poll keeps watching and fires onSuccess later.
+                    if (method === "WALLET" || orderStatus !== "PENDING") {
+                      onSuccess(orderRef ?? "");
+                    }
+                    onClose();
+                  }}
                   className="mt-2 rounded-xl px-6 py-2.5 text-sm font-semibold text-white"
                   style={{ background: "var(--gradient-cta)" }}
                 >
-                  Done
+                  {method === "MOMO" && orderStatus === "PENDING" ? "Close" : "Done"}
                 </button>
               </div>
             )}

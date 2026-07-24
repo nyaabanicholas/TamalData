@@ -4,11 +4,20 @@ import type { Network } from "@/types";
 const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY!;
 const BASE_URL = "https://api.paystack.co";
 
-// Paystack Ghana mobile money bank codes
+// Paystack Ghana mobile money bank codes — used for /transferrecipient (payouts).
+// These match the "code" field from GET /bank?currency=GHS&type=mobile_money.
 const MOMO_BANK_CODES: Record<Network, string> = {
   MTN: "MTN",
   TELECEL: "VOD",
   AIRTELTIGO: "ATL",
+};
+
+// Paystack /charge mobile_money.provider values — lowercase, per Paystack's
+// charge API (distinct casing from the transfer-recipient bank codes above).
+const MOMO_CHARGE_PROVIDER: Record<Network, string> = {
+  MTN: "mtn",
+  TELECEL: "vod",
+  AIRTELTIGO: "atl",
 };
 
 // Paystack test mobile money numbers for Ghana
@@ -67,7 +76,7 @@ export async function initiateCharge(
       currency: "GHS",
       mobile_money: {
         phone,
-        provider: MOMO_BANK_CODES[network],
+        provider: MOMO_CHARGE_PROVIDER[network],
       },
       reference,
       email: email ?? `${phone}@tamaldata.com`,
