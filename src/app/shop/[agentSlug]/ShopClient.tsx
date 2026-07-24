@@ -18,9 +18,8 @@ export function ShopClient({ shop, networks, bundles }: ShopProps) {
   const [activeNet, setActiveNet] = useState<Network>(networks[0]);
   const [selectedDataBundle, setSelectedDataBundle] = useState<DataBundle | null>(null);
   const [phone, setPhone]     = useState("");
-  const [step, setStep]       = useState<"browse" | "checkout" | "pending" | "success">("browse");
+  const [step, setStep]       = useState<"browse" | "checkout">("browse");
   const [loading, setLoading] = useState(false);
-  const [orderRef, setOrderRef] = useState("");
   const [error, setError]     = useState("");
 
   const displayDataBundles = bundles[activeNet] ?? [];
@@ -33,17 +32,6 @@ export function ShopClient({ shop, networks, bundles }: ShopProps) {
     setError("");
     setLoading(true);
     try {
-      // Get the customer's MoMo network from the phone prefix
-      const getNetworkFromPhone = (phone: string): Network => {
-        const prefix = phone.substring(0, 3);
-        if (prefix === "024" || prefix === "054" || prefix === "055" || prefix === "059") return "MTN";
-        if (prefix === "020" || prefix === "050") return "TELECEL";
-        if (prefix === "026" || prefix === "027" || prefix === "056" || prefix === "057") return "AIRTELTIGO";
-        return activeNet; // Fallback to selected network
-      };
-      
-      const payerNetwork = getNetworkFromPhone(phone);
-      
       const res = await fetch("/api/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -54,24 +42,23 @@ export function ShopClient({ shop, networks, bundles }: ShopProps) {
           bundleValidity: selectedDataBundle.validity,
           costPrice:     selectedDataBundle.price,
           sellPrice:     selectedDataBundle.price,
-          recipientPhone: phone,
+          phone,
           paymentMethod: "MOMO",
-          payerPhone:    phone,
-          payerNetwork:  payerNetwork,
           agentId:       shop.agentId,
         }),
       });
       const data = await res.json();
-      if (!res.ok) { 
-        setError(data.error ?? data.message ?? "Order failed"); 
-        return; 
+      if (!res.ok) {
+        setError(data.error ?? data.message ?? "Order failed");
+        return;
       }
-      setOrderRef(data.reference);
-      if (data.status === "PENDING") {
-        setStep("pending");
-      } else {
-        setStep("success");
+      // Redirect to Paystack's hosted checkout — the payer enters their own
+      // MoMo number there (kept separate from the recipient number above).
+      if (!data.authorization_url) {
+        setError(data.error ?? "Could not start payment. Please try again.");
+        return;
       }
+      window.location.href = data.authorization_url;
     } catch {
       setError("Network error. Try again.");
     } finally {
@@ -96,22 +83,7 @@ export function ShopClient({ shop, networks, bundles }: ShopProps) {
       </div>
 
       <div className="max-w-3xl mx-auto">
-        {step === "success" ? (
-          <GlassPanel className="p-8 text-center">
-            <div className="text-5xl mb-4">✅</div>
-            <h2 className="font-heading text-2xl text-text-primary mb-2">Order Delivered!</h2>
-            <p className="text-text-secondary mb-4">Your data bundle has been delivered.</p>
-            <p className="font-mono text-sm text-accent-primary mb-6">{orderRef}</p>
-            <a href={`/track?ref=${orderRef}`} className="text-sm text-accent-primary hover:underline">Track your order →</a>
-          </GlassPanel>
-        ) : step === "pending" ? (
-          <GlassPanel className="p-8 text-center">
-            <div className="text-5xl mb-4">⏳</div>
-            <h2 className="font-heading text-2xl text-text-primary mb-2">Payment Pending</h2>
-            <p className="text-text-secondary mb-4">Please approve the payment prompt on your phone.</p>
-            <p className="font-mono text-sm text-accent-primary mb-6">{orderRef}</p>
-          </GlassPanel>
-        ) : step === "checkout" ? (
+        {step === "checkout" ? (
           <GlassPanel className="p-6 max-w-md mx-auto">
             <button onClick={() => setStep("browse")} className="text-xs text-text-muted hover:text-text-primary mb-4 flex items-center gap-1">
               ← Back to bundles
@@ -123,7 +95,7 @@ export function ShopClient({ shop, networks, bundles }: ShopProps) {
               <p className="text-accent-primary font-semibold">GH₵{selectedDataBundle?.price.toFixed(2)}</p>
             </div>
             <div className="mb-4">
-              <label className="text-xs text-text-muted uppercase tracking-widest block mb-2">Your Phone Number</label>
+              <label className="text-xs text-text-muted uppercase tracking-widest block mb-2">Recipient&apos;s Phone Number</label>
               <input
                 type="tel"
                 value={phone}
@@ -133,7 +105,7 @@ export function ShopClient({ shop, networks, bundles }: ShopProps) {
               />
             </div>
             <GlassPanel className="p-3 mb-4 text-xs text-text-secondary text-center">
-              <p>You will receive a payment prompt on your MoMo. Approve to complete the purchase.</p>
+              <p>You&apos;ll be taken to Paystack to pay — enter the MoMo number you&apos;re paying with there.</p>
             </GlassPanel>
             {error && <p className="text-red-400 text-sm mb-3">{error}</p>}
             <GlowButton onClick={handleCheckout} disabled={loading} className="w-full">

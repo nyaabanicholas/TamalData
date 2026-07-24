@@ -91,27 +91,50 @@ export async function initiateCharge(
   return res.json() as Promise<ChargeResponse>;
 }
 
-export interface SubmitOtpParams {
+export interface InitializeTransactionParams {
+  amount: number; // in GHS (will be converted to pesewas ×100)
+  email: string;
   reference: string;
-  otp: string;
+  callback_url?: string;
 }
 
-// Completes a MoMo charge that came back with data.status === "send_otp" —
-// Paystack texts the customer a code, which they enter in our UI and we
-// relay back here to authorize the debit.
-export async function submitOtp(params: SubmitOtpParams): Promise<ChargeResponse> {
-  const res = await fetch(`${BASE_URL}/charge/submit_otp`, {
+export interface InitializeTransactionResponse {
+  status: boolean;
+  message: string;
+  data: {
+    authorization_url: string;
+    access_code: string;
+    reference: string;
+  };
+}
+
+// Standard Paystack hosted checkout — used for data-order MoMo payments so the
+// PAYER enters their own number on Paystack's page, instead of us assuming the
+// recipient's number is the one being charged.
+export async function initializeTransaction(
+  params: InitializeTransactionParams
+): Promise<InitializeTransactionResponse> {
+  const { amount, email, reference, callback_url } = params;
+
+  const res = await fetch(`${BASE_URL}/transaction/initialize`, {
     method: "POST",
     headers: paystackHeaders(),
-    body: JSON.stringify({ otp: params.otp, reference: params.reference }),
+    body: JSON.stringify({
+      amount: Math.round(amount * 100),
+      currency: "GHS",
+      email,
+      reference,
+      channels: ["mobile_money"],
+      ...(callback_url ? { callback_url } : {}),
+    }),
   });
 
   if (!res.ok) {
     const body = await res.text();
-    throw new Error(`Paystack submit_otp error ${res.status}: ${body}`);
+    throw new Error(`Paystack initialize error ${res.status}: ${body}`);
   }
 
-  return res.json() as Promise<ChargeResponse>;
+  return res.json() as Promise<InitializeTransactionResponse>;
 }
 
 export function verifyWebhookSignature(

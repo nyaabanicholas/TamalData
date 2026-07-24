@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { initiateCharge, PAYSTACK_TEST_NUMBERS, isTestMode } from "@/lib/paystack";
+import { initializeTransaction, isTestMode } from "@/lib/paystack";
 import { getEffectivePrice, generateOrderReference } from "@/lib/markup";
 import { getBundleById } from "@/data/bundles";
 import { orderRateLimit, getClientIp } from "@/lib/ratelimit";
@@ -11,7 +11,8 @@ import type { PaymentMethod } from "@prisma/client";
 
 const GHANA_PHONE = /^0[2345][0-9]{8}$/;
 
-// Map payer MoMo network → Prisma PaymentMethod
+// Bundle network → Prisma PaymentMethod (informational tag only; the actual
+// payer network is whatever the customer selects on Paystack's checkout page).
 const PAYMENT_METHOD: Record<Network, PaymentMethod> = {
   MTN: "MTN_MOMO",
   TELECEL: "TELECEL_CASH",
@@ -31,9 +32,6 @@ const OrderSchema = z.object({
   agentId: z.string().optional(),
   // payment selection
   paymentMethod: z.enum(["MOMO", "WALLET"]).default("MOMO"),
-  // payer MoMo details (required when paymentMethod === "MOMO")
-  payerPhone: z.string().regex(GHANA_PHONE, "Invalid Ghana phone number").optional(),
-  payerNetwork: z.enum(["MTN", "TELECEL", "AIRTELTIGO"]).optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -74,8 +72,6 @@ export async function POST(request: NextRequest) {
     userId,
     agentId,
     paymentMethod,
-    payerPhone,
-    payerNetwork,
   } = parsed.data;
 
   const net = network as Network;
@@ -251,13 +247,9 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  // ─── MOMO path: collect payment via Paystack FIRST; webhook delivers ────────
-  if (!payerPhone || !payerNetwork) {
-    return NextResponse.json(
-      { error: "Enter the mobile money number and network to pay with." },
-      { status: 400 },
-    );
-  }
+  // ─── MOMO path: redirect to Paystack's hosted checkout; webhook delivers ────
+  // Payer enters their OWN number on Paystack's page — kept separate from the
+  // recipient `phone` above, since the two can be different people.
 
   // Create or update customer for reseller tracking (MOMO path)
   let customerId: string | undefined;
@@ -306,7 +298,7 @@ export async function POST(request: NextRequest) {
       recipientPhone: phone,
       costPrice,
       sellPrice,
-      paymentMethod: PAYMENT_METHOD[payerNetwork as Network],
+      paymentMethod: PAYMENT_METHOD[net],
       status: "PENDING",
     },
   });
@@ -321,43 +313,54 @@ export async function POST(request: NextRequest) {
       bundleValidity,
       recipientPhone: phone,
       sellPrice,
-      paymentMethod: PAYMENT_METHOD[payerNetwork as Network],
+      paymentMethod: PAYMENT_METHOD[net],
       status: "PENDING",
     }),
   );
 
-  try {
-    const charge = await initiateCharge({
-      amount: sellPrice,
-      phone: payerPhone,
-      network: payerNetwork as Network,
-      reference,
+  // In test mode, auto-confirm the order since there's no live Paystack
+  // checkout to complete and no webhook will fire against localhost.
+  if (isTestMode()) {
+    await prisma.order.update({
+      where: { reference },
+      data: { status: "PENDING_FULFILLMENT", paymentRef: reference },
     });
 
-    // In test mode, auto-confirm the order since the Paystack webhook
-    // won't fire (no actual phone prompt to approve).
-    if (isTestMode() && charge.status) {
+    return NextResponse.json({
+      reference,
+      success: true,
+      status: "PENDING_FULFILLMENT",
+      display_text: "Test payment successful! Admin will process the data shortly.",
+    });
+  }
+
+  try {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+    const init = await initializeTransaction({
+      amount: sellPrice,
+      email: `${phone}@tamaldata.com`,
+      reference,
+      callback_url: `${appUrl}/track?ref=${reference}`,
+    });
+
+    if (!init.status) {
       await prisma.order.update({
         where: { reference },
-        data: { status: "PENDING_FULFILLMENT", paymentRef: reference },
+        data: { status: "FAILED", failureReason: init.message || "Could not start payment" },
       });
-
-      return NextResponse.json({
-        reference,
-        success: true,
-        status: "PENDING_FULFILLMENT",
-        display_text: "Test payment successful! Admin will process the data shortly.",
-      });
+      return NextResponse.json(
+        { error: init.message || "Could not start payment. Please try again.", reference },
+        { status: 502 },
+      );
     }
 
-    // Delivery happens ONLY in the Paystack webhook on charge.success.
+    // Delivery happens ONLY in the Paystack webhook on charge.success —
+    // the customer now goes to Paystack's page to pick a network + number.
     return NextResponse.json({
       reference,
       success: true,
       status: "PENDING",
-      chargeStatus: charge.data?.status ?? null,
-      display_text:
-        charge.data?.display_text ?? "Approve the payment prompt on your phone.",
+      authorization_url: init.data.authorization_url,
     });
   } catch (error) {
     await prisma.order.update({
@@ -367,27 +370,10 @@ export async function POST(request: NextRequest) {
         failureReason: error instanceof Error ? error.message : "Payment initiation failed",
       },
     });
-    console.error("[/api/order] Paystack charge error:", error);
-    
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    const isTestModeError = errorMessage.includes("test mobile money number") || 
-                            errorMessage.includes("test transaction") ||
-                            errorMessage.includes("Declined");
-
-    if (isTestModeError) {
-      return NextResponse.json(
-        { 
-          error: "Test transaction requires test mobile money number",
-          message: "Please use Paystack test mobile money numbers",
-          testNumbers: PAYSTACK_TEST_NUMBERS,
-          reference,
-        },
-        { status: 400 },
-      );
-    }
+    console.error("[/api/order] Paystack initialize error:", error);
 
     return NextResponse.json(
-      { 
+      {
         error: "Could not start payment. Please try again.",
         reference,
       },
