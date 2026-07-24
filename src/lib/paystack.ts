@@ -91,6 +91,29 @@ export async function initiateCharge(
   return res.json() as Promise<ChargeResponse>;
 }
 
+export interface SubmitOtpParams {
+  reference: string;
+  otp: string;
+}
+
+// Completes a MoMo charge that came back with data.status === "send_otp" —
+// Paystack texts the customer a code, which they enter in our UI and we
+// relay back here to authorize the debit.
+export async function submitOtp(params: SubmitOtpParams): Promise<ChargeResponse> {
+  const res = await fetch(`${BASE_URL}/charge/submit_otp`, {
+    method: "POST",
+    headers: paystackHeaders(),
+    body: JSON.stringify({ otp: params.otp, reference: params.reference }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`Paystack submit_otp error ${res.status}: ${body}`);
+  }
+
+  return res.json() as Promise<ChargeResponse>;
+}
+
 export function verifyWebhookSignature(
   rawBody: string,
   signature: string

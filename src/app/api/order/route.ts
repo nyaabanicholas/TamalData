@@ -355,6 +355,7 @@ export async function POST(request: NextRequest) {
       reference,
       success: true,
       status: "PENDING",
+      chargeStatus: charge.data?.status ?? null,
       display_text:
         charge.data?.display_text ?? "Approve the payment prompt on your phone.",
     });

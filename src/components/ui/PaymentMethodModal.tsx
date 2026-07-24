@@ -35,6 +35,10 @@ export function PaymentMethodModal({
   const [orderRef, setOrderRef] = useState<string | null>(null);
   const [orderStatus, setOrderStatus] = useState<string | null>(null);
   const [payDisplayText, setPayDisplayText] = useState<string | null>(null);
+  const [chargeStatus, setChargeStatus] = useState<string | null>(null);
+  const [otpValue, setOtpValue] = useState("");
+  const [otpSubmitting, setOtpSubmitting] = useState(false);
+  const [otpError, setOtpError] = useState("");
   const [deliveryStatus, setDeliveryStatus] = useState("OPERATIONAL");
 
   const handlePay = async () => {
@@ -66,7 +70,7 @@ export function PaymentMethodModal({
       });
 
       const data = await res.json() as {
-        error?: string; reference?: string; status?: string; display_text?: string;
+        error?: string; reference?: string; status?: string; chargeStatus?: string; display_text?: string;
       };
 
       if (!res.ok) throw new Error(data.error ?? "Payment failed");
@@ -82,11 +86,41 @@ export function PaymentMethodModal({
       // Poll order status; only fire onSuccess once it's actually confirmed.
       setOrderRef(data.reference!);
       setOrderStatus(data.status ?? "PENDING");
+      setChargeStatus(data.chargeStatus ?? null);
       setPayDisplayText(data.display_text ?? null);
       setStep("success");
     } catch (err) {
       setStep("error");
       setError(err instanceof Error ? err.message : "Something went wrong");
+    }
+  };
+
+  const handleSubmitOtp = async () => {
+    if (!orderRef || !otpValue.trim()) return;
+    setOtpSubmitting(true);
+    setOtpError("");
+
+    try {
+      const res = await fetch("/api/order/submit-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reference: orderRef, otp: otpValue.trim() }),
+      });
+      const data = await res.json() as {
+        error?: string; chargeStatus?: string; display_text?: string;
+      };
+
+      if (!res.ok) throw new Error(data.error ?? "Incorrect code. Please try again.");
+
+      // Charge is authorized — the webhook confirms + delivers from here.
+      // Clear send_otp so the UI drops the code field and just waits.
+      setChargeStatus(data.chargeStatus ?? null);
+      if (data.display_text) setPayDisplayText(data.display_text);
+      setOtpValue("");
+    } catch (err) {
+      setOtpError(err instanceof Error ? err.message : "Incorrect code. Please try again.");
+    } finally {
+      setOtpSubmitting(false);
     }
   };
 
@@ -268,6 +302,8 @@ export function PaymentMethodModal({
                 <p className="font-semibold text-text-primary">
                   {method === "WALLET"
                     ? "Payment successful!"
+                    : chargeStatus === "send_otp"
+                    ? "Enter the code you received"
                     : orderStatus === "PENDING"
                     ? "Awaiting your approval..."
                     : "Payment confirmed!"}
@@ -275,13 +311,39 @@ export function PaymentMethodModal({
                 <p className="text-text-muted text-xs font-barlow text-center">
                   {method === "WALLET"
                     ? "Data is being delivered to your number."
+                    : chargeStatus === "send_otp"
+                    ? "Paystack texted a code to your phone to authorize this payment. Enter it below."
                     : "We'll confirm automatically once Paystack notifies us — you can close this and check Track Order later."}
                 </p>
-                {method === "MOMO" && orderStatus === "PENDING" && payDisplayText && (
+                {method === "MOMO" && orderStatus === "PENDING" && payDisplayText && chargeStatus !== "send_otp" && (
                   <div className="w-full rounded-xl bg-accent-orange/10 border border-accent-orange/25 px-3 py-2.5">
                     <p className="text-xs font-semibold text-accent-orange text-center font-barlow">
                       {payDisplayText}
                     </p>
+                  </div>
+                )}
+                {method === "MOMO" && orderStatus === "PENDING" && chargeStatus === "send_otp" && (
+                  <div className="w-full space-y-2">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={otpValue}
+                      onChange={(e) => setOtpValue(e.target.value)}
+                      placeholder="Enter code"
+                      disabled={otpSubmitting}
+                      className="w-full liquid-glass rounded-xl px-3 py-2.5 text-sm text-center text-text-primary tracking-widest outline-none"
+                    />
+                    {otpError && (
+                      <p className="text-xs text-color-error text-center font-barlow">{otpError}</p>
+                    )}
+                    <button
+                      onClick={handleSubmitOtp}
+                      disabled={otpSubmitting || !otpValue.trim()}
+                      className="w-full flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+                      style={{ background: "var(--gradient-cta)" }}
+                    >
+                      {otpSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit code"}
+                    </button>
                   </div>
                 )}
                 {orderRef && (
@@ -297,8 +359,12 @@ export function PaymentMethodModal({
                     }
                     onClose();
                   }}
-                  className="mt-2 rounded-xl px-6 py-2.5 text-sm font-semibold text-white"
-                  style={{ background: "var(--gradient-cta)" }}
+                  className={
+                    chargeStatus === "send_otp"
+                      ? "mt-1 liquid-glass rounded-xl px-6 py-2 text-sm font-semibold text-text-primary"
+                      : "mt-2 rounded-xl px-6 py-2.5 text-sm font-semibold text-white"
+                  }
+                  style={chargeStatus === "send_otp" ? undefined : { background: "var(--gradient-cta)" }}
                 >
                   {method === "MOMO" && orderStatus === "PENDING" ? "Close" : "Done"}
                 </button>
