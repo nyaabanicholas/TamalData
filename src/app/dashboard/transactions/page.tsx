@@ -3,6 +3,8 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { formatGHS } from "@/lib/utils";
 import type { Metadata } from "next";
+import { CreditCard } from "lucide-react";
+import { IconTile } from "@/components/ui/IconTile";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Transactions — TamalData" };
@@ -32,7 +34,7 @@ export default async function TransactionsPage() {
 
         {txns.length === 0 ? (
           <div className="liquid-glass rounded-2xl p-16 text-center">
-            <p className="text-4xl mb-3">💳</p>
+            <IconTile icon={CreditCard} />
             <p className="text-text-secondary font-medium">No transactions yet</p>
             <p className="text-text-muted text-sm mt-1">Top up your wallet to get started.</p>
           </div>

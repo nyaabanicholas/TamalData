@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { StatusBadge } from "@/components/ui/StatusBadge";
@@ -83,12 +84,30 @@ export default async function AdminPage() {
     prisma.siteSettings.findUnique({ where: { id: "singleton" } }),
   ]);
 
+  const walletFunds = Math.max(0, Number(walletCredits._sum.amount ?? 0) - Number(walletDebits._sum.amount ?? 0));
+  const needsAttention = failedToday + pendingFulfillment + pendingPayouts + pendingResellers;
+
   return (
-    <div className="min-h-screen bg-bg-base pt-8 pb-8 px-8">
+    <div className="min-h-screen bg-bg-base px-4 py-8 sm:px-8">
       <div className="max-w-content mx-auto">
-        <h1 className="font-display font-bold text-3xl text-text-primary mb-6">
-          Admin Dashboard
-        </h1>
+        <header className="mb-8 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h1 className="font-heading text-3xl md:text-4xl text-text-primary">Overview</h1>
+            <p className="mt-1 text-sm text-text-muted">
+              {now.toLocaleDateString("en-GH", { weekday: "long", day: "numeric", month: "long" })}
+            </p>
+          </div>
+          <span
+            className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium ring-1 ring-inset ${
+              needsAttention > 0
+                ? "bg-color-warning/10 text-color-warning ring-color-warning/25"
+                : "bg-color-success/10 text-color-success ring-color-success/25"
+            }`}
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-current" />
+            {needsAttention > 0 ? `${needsAttention} item${needsAttention === 1 ? "" : "s"} need attention` : "All clear"}
+          </span>
+        </header>
 
         <NetworkStatusPanel
           mtnStatus={siteSettings?.mtnStatus ?? "OPERATIONAL"}
@@ -96,30 +115,35 @@ export default async function AdminPage() {
           airteltigoStatus={siteSettings?.airteltigoStatus ?? "OPERATIONAL"}
         />
 
-        {/* KPI cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <KpiCard label="Today's Orders" value={String(todayOrders)} />
-          <KpiCard label="Total Revenue (All)" value={formatGHS(Number(totalRevenue._sum.sellPrice ?? 0))} />
-          <KpiCard label="Revenue (7d)" value={formatGHS(Number(revenueWeek._sum.sellPrice ?? 0))} />
-          <KpiCard label="Revenue (30d)" value={formatGHS(Number(revenueMonth._sum.sellPrice ?? 0))} />
-          <KpiCard label="Total Users" value={String(totalUsers)} />
-          <KpiCard label="Resellers" value={String(totalResellers)} accent />
-          <KpiCard label="Wallet Funds" value={formatGHS(Math.max(0, Number(walletCredits._sum.amount ?? 0) - Number(walletDebits._sum.amount ?? 0)))} />
-          <KpiCard label="Failed Today" value={String(failedToday)} warn={failedToday > 0} />
-          <KpiCard label="Pending Fulfillment" value={String(pendingFulfillment)} warn={pendingFulfillment > 0} />
-          <KpiCard label="Pending Payouts" value={String(pendingPayouts)} warn={pendingPayouts > 0} />
-          <KpiCard label="Pending Resellers" value={String(pendingResellers)} warn={pendingResellers > 0} />
-        </div>
+        <KpiGroup title="Revenue">
+          <KpiCard label="All time" value={formatGHS(Number(totalRevenue._sum.sellPrice ?? 0))} hero />
+          <KpiCard label="Last 30 days" value={formatGHS(Number(revenueMonth._sum.sellPrice ?? 0))} />
+          <KpiCard label="Last 7 days" value={formatGHS(Number(revenueWeek._sum.sellPrice ?? 0))} />
+          <KpiCard label="Wallet funds held" value={formatGHS(walletFunds)} />
+        </KpiGroup>
+
+        <KpiGroup title="Needs attention">
+          <KpiCard label="Failed today" value={String(failedToday)} href="/admin/orders" warn={failedToday > 0} />
+          <KpiCard label="Pending fulfillment" value={String(pendingFulfillment)} href="/admin/fulfillment" warn={pendingFulfillment > 0} />
+          <KpiCard label="Pending payouts" value={String(pendingPayouts)} href="/admin/payouts" warn={pendingPayouts > 0} />
+          <KpiCard label="Pending resellers" value={String(pendingResellers)} href="/admin/resellers" warn={pendingResellers > 0} />
+        </KpiGroup>
+
+        <KpiGroup title="Platform">
+          <KpiCard label="Orders today" value={String(todayOrders)} />
+          <KpiCard label="Total users" value={String(totalUsers)} />
+          <KpiCard label="Resellers" value={String(totalResellers)} />
+        </KpiGroup>
 
         {/* Orders by network - mini breakdown */}
         <div className="grid grid-cols-3 gap-4 mb-10">
           {(["MTN", "TELECEL", "AIRTELTIGO"] as const).map((net) => {
             const count = ordersByNetwork.find((o) => o.network === net)?._count ?? 0;
             return (
-              <div key={net} className="liquid-glass rounded-xl p-4 text-center">
-                <p className="text-xs text-text-muted uppercase tracking-wider mb-1">{net}</p>
-                <p className="font-display font-bold text-2xl text-text-primary">{count}</p>
-                <p className="text-[10px] text-text-muted">orders today</p>
+              <div key={net} className="liquid-glass rounded-[1.25rem] p-4 text-center">
+                <p className="text-xs font-medium text-text-muted mb-1">{net}</p>
+                <p className="font-display font-semibold text-2xl text-text-primary tabular-nums">{count}</p>
+                <p className="text-[11px] text-text-muted">orders today</p>
               </div>
             );
           })}
@@ -129,14 +153,14 @@ export default async function AdminPage() {
         <GlassPanel>
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-display font-semibold text-lg text-text-primary">
-              Recent Orders
+              Recent orders
             </h2>
-            <a
+            <Link
               href="/admin/orders"
-              className="text-sm text-accent-glow hover:underline"
+              className="text-sm font-medium text-accent-primary transition-colors hover:text-accent-glow"
             >
               View all
-            </a>
+            </Link>
           </div>
 
           <div className="overflow-x-auto">
@@ -185,27 +209,46 @@ export default async function AdminPage() {
   );
 }
 
+function KpiGroup({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="mb-8">
+      <h2 className="mb-3 text-sm font-medium text-text-muted">{title}</h2>
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">{children}</div>
+    </section>
+  );
+}
+
 function KpiCard({
   label,
   value,
   warn = false,
-  accent = false,
+  hero = false,
+  href,
 }: {
   label: string;
   value: string;
   warn?: boolean;
-  accent?: boolean;
+  hero?: boolean;
+  href?: string;
 }) {
-  return (
-    <GlassPanel>
-      <p className="text-xs text-text-muted mb-1 uppercase tracking-wide">{label}</p>
+  const body = (
+    <GlassPanel
+      className={`h-full p-5 ${warn ? "ring-1 ring-inset ring-color-warning/30" : ""} ${
+        href ? "transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5" : ""
+      }`}
+    >
+      <p className="flex items-center gap-2 text-xs font-medium text-text-muted">
+        {warn && <span className="h-1.5 w-1.5 rounded-full bg-color-warning" />}
+        {label}
+      </p>
       <p
-        className={`font-display font-bold text-2xl ${
-          warn ? "text-color-warning" : accent ? "text-accent-primary" : "text-text-primary"
+        className={`mt-2 font-display font-semibold tabular-nums tracking-tight ${hero ? "text-3xl" : "text-2xl"} ${
+          warn ? "text-color-warning" : hero ? "text-accent-primary" : "text-text-primary"
         }`}
       >
         {value}
       </p>
     </GlassPanel>
   );
+  return href ? <Link href={href}>{body}</Link> : body;
 }

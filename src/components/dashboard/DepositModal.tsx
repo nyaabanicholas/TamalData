@@ -163,7 +163,7 @@ export function DepositModal({ open, onClose, onSuccess }: DepositModalProps) {
                 <CheckCircle2 className="h-12 w-12 text-color-success" strokeWidth={1.5} />
                 <p className="font-semibold text-text-primary">Deposit successful!</p>
                 <p className="text-text-muted text-sm">Your wallet balance has been updated.</p>
-                <button onClick={() => { onSuccess?.(); handleClose(); }} className="mt-2 rounded-xl px-6 py-2.5 text-sm font-semibold text-white" style={{ background: "var(--gradient-cta)" }}>
+                <button onClick={() => { onSuccess?.(); handleClose(); }} className="mt-2 rounded-xl px-6 py-2.5 text-sm font-semibold text-white" style={{ background: "var(--cta-fill)" }}>
                   Done
                 </button>
               </div>
@@ -249,7 +249,7 @@ export function DepositModal({ open, onClose, onSuccess }: DepositModalProps) {
                   onClick={handleDeposit}
                   disabled={!valid || step === "loading" || step === "awaiting"}
                   className="w-full flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-50"
-                  style={{ background: "var(--gradient-cta)" }}
+                  style={{ background: "var(--cta-fill)" }}
                 >
                   {step === "loading" ? <Loader2 className="h-4 w-4 animate-spin" /> :
                    step === "awaiting" ? <><Loader2 className="h-4 w-4 animate-spin" /> Awaiting approval…</> :

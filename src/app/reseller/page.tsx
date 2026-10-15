@@ -7,6 +7,8 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { formatGHS } from "@/lib/utils";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { BarChart3, Hourglass, Lightbulb } from "lucide-react";
+import { IconTile } from "@/components/ui/IconTile";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Reseller Portal" };
@@ -52,42 +54,38 @@ export default async function ResellerPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs px-2 py-0.5 rounded-full font-bold uppercase tracking-widest"
-                style={{ backgroundColor: "rgba(0,157,249,0.1)", color: "var(--accent-primary)" }}>
-                Reseller Portal
-              </span>
-              {isPending && (
-                <span className="text-xs px-2 py-0.5 rounded-full font-bold uppercase tracking-widest"
-                  style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-warning)" }}>
-                  Pending Approval
-                </span>
-              )}
-            </div>
-            <h1 className="font-display font-extrabold text-3xl text-text-primary">
+            <h1 className="font-heading text-3xl md:text-4xl tracking-tight text-text-primary">
               {user?.name ?? user?.phone}
             </h1>
+            <p className="mt-1 flex items-center gap-2 text-sm text-text-muted">
+              Your reseller business at a glance
+              {isPending && (
+                <span className="rounded-full bg-color-warning/10 px-2.5 py-0.5 text-xs font-medium text-color-warning ring-1 ring-inset ring-color-warning/25">
+                  Pending approval
+                </span>
+              )}
+            </p>
           </div>
           {isReseller && (
             <Link href="/buy">
-              <GlowButton size="md">+ Place Order</GlowButton>
+              <GlowButton size="md">Place order</GlowButton>
             </Link>
           )}
         </div>
 
         {isPending ? (
           <GlassPanel className="p-12 text-center max-w-xl mx-auto">
-            <div className="text-5xl mb-4">⏳</div>
-            <h2 className="font-display font-bold text-xl text-text-primary mb-2">
+            <IconTile icon={Hourglass} className="h-14 w-14" />
+            <h2 className="font-display font-semibold text-xl tracking-tight tabular-nums text-text-primary mb-2">
               Application Under Review
             </h2>
             <p className="text-text-secondary text-sm">
               Your reseller application is being reviewed. You&apos;ll receive an SMS once approved.
-              Approval usually takes 24–48 hours.
+              Approval usually takes 24-48 hours.
             </p>
             <div className="mt-6">
               <Link href="/dashboard">
-                <GlowButton variant="ghost" size="sm">← Back to Dashboard</GlowButton>
+                <GlowButton variant="ghost" size="sm">Back to dashboard</GlowButton>
               </Link>
             </div>
           </GlassPanel>
@@ -96,14 +94,14 @@ export default async function ResellerPage() {
             {/* KPIs */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
               {[
-                { label: "Wallet Balance", value: formatGHS(Number(user?.walletBalance ?? 0)), color: "var(--accent-primary)" },
-                { label: "Total Revenue",  value: formatGHS(revenue),                  color: "var(--color-success)" },
-                { label: "Orders Delivered", value: String(deliveredCount),             color: "var(--accent-orange)" },
-                { label: "Reseller Tier", value: "8% Markup",                          color: "var(--color-warning)" },
+                { label: "Wallet balance",   value: formatGHS(Number(user?.walletBalance ?? 0)), color: "var(--text-primary)" },
+                { label: "Total revenue",    value: formatGHS(revenue),                         color: "var(--color-success)" },
+                { label: "Orders delivered", value: String(deliveredCount),                     color: "var(--text-primary)" },
+                { label: "Your tier",        value: "8% markup",                                color: "var(--text-primary)" },
               ].map((kpi) => (
                 <GlassPanel key={kpi.label} className="p-5">
-                  <p className="text-xs text-text-muted uppercase tracking-widest mb-2">{kpi.label}</p>
-                  <p className="font-display font-extrabold text-2xl" style={{ color: kpi.color }}>
+                  <p className="text-sm text-text-muted mb-2">{kpi.label}</p>
+                  <p className="font-display font-semibold text-2xl tracking-tight tabular-nums" style={{ color: kpi.color }}>
                     {kpi.value}
                   </p>
                 </GlassPanel>
@@ -112,11 +110,11 @@ export default async function ResellerPage() {
 
             {/* Info card */}
             <GlassPanel className="p-5 mb-8 flex gap-4 items-start border-l-2" style={{ borderLeftColor: "var(--accent-primary)" }}>
-              <div className="text-2xl">💡</div>
+              <IconTile icon={Lightbulb} className="mx-0 mb-0 h-10 w-10 rounded-xl" />
               <div>
-                <p className="font-semibold text-text-primary text-sm mb-1">Your Reseller Advantage</p>
+                <p className="font-semibold text-text-primary text-sm mb-1">Your reseller advantage</p>
                 <p className="text-xs text-text-secondary">
-                  You buy at wholesale pricing — retail customers pay the standard rate.
+                  You buy at wholesale pricing while retail customers pay the standard rate.
                   Your margin is the difference. Build your own customer base and pocket the spread.
                 </p>
               </div>
@@ -124,16 +122,16 @@ export default async function ResellerPage() {
 
             {/* Recent orders */}
             <div>
-              <h2 className="font-display font-bold text-xl text-text-primary mb-4">Recent Orders</h2>
+              <h2 className="font-display font-semibold text-xl tracking-tight tabular-nums text-text-primary mb-4">Recent Orders</h2>
               {(orders as typeof orders).length === 0 ? (
                 <GlassPanel className="p-12 text-center">
-                  <p className="text-4xl mb-3">📊</p>
+                  <IconTile icon={BarChart3} />
                   <p className="font-medium text-text-secondary">No orders yet</p>
                   <p className="text-sm text-text-muted mt-1 mb-6">
                     Place your first reseller order to get started.
                   </p>
                   <Link href="/buy">
-                    <GlowButton size="sm">Buy Data for a Customer</GlowButton>
+                    <GlowButton size="sm">Buy data for a customer</GlowButton>
                   </Link>
                 </GlassPanel>
               ) : (

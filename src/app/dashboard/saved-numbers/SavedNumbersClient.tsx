@@ -171,7 +171,7 @@ export function SavedNumbersClient({ initialNumbers }: { initialNumbers: SavedNu
                       className="h-10 w-10 rounded-full flex items-center justify-center shrink-0 text-xs font-bold"
                       style={{ backgroundColor: color, color: net === "MTN" ? "#1A1200" : "#fff" }}
                     >
-                      {net ? net.slice(0, 2) : "📱"}
+                      {net ? net.slice(0, 2) : "#"}
                     </div>
                     <div className="flex-1 min-w-0">
                       {n.label && (

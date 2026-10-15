@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { TrackClient } from "./TrackClient";
-import { Footer } from "@/components/landing/Footer";
 
 export const metadata: Metadata = {
   title: "Track Order",
@@ -24,7 +23,6 @@ export default function TrackPage() {
           </Suspense>
         </div>
       </main>
-      <Footer />
     </>
   );
 }

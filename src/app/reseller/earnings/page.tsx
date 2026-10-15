@@ -49,7 +49,7 @@ export default async function EarningsPage() {
 
   return (
     <div className="container-content pt-4 pb-10">
-      <h1 className="font-display font-extrabold text-3xl text-text-primary mb-8">Earnings & Payouts</h1>
+      <h1 className="font-heading text-3xl md:text-4xl tracking-tight text-text-primary mb-8">Earnings & Payouts</h1>
 
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
@@ -60,7 +60,7 @@ export default async function EarningsPage() {
           { label: "Orders Delivered",value: String(delivered),      color: "var(--text-secondary)" },
         ].map((s) => (
           <GlassPanel key={s.label} className="p-4">
-            <p className="text-xs text-text-muted uppercase tracking-widest mb-1">{s.label}</p>
+            <p className="text-sm text-text-muted mb-1">{s.label}</p>
             <p className="font-display font-bold text-xl" style={{ color: s.color }}>{s.value}</p>
           </GlassPanel>
         ))}
@@ -78,7 +78,7 @@ export default async function EarningsPage() {
           ) : pendingPayout ? (
             <div className="rounded-card p-4 bg-bg-elevated border border-color-border/40">
               <p className="text-text-secondary text-sm">You have a pending payout of</p>
-              <p className="font-display font-bold text-2xl text-accent-primary mt-1">{formatGHS(Number(pendingPayout.amount))}</p>
+              <p className="font-display font-semibold text-2xl tracking-tight tabular-nums text-text-primary mt-1">{formatGHS(Number(pendingPayout.amount))}</p>
               <p className="text-xs text-text-muted mt-2">Submitted {new Date(pendingPayout.createdAt).toLocaleDateString("en-GH")}</p>
             </div>
           ) : (

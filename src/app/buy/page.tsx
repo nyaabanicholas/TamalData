@@ -22,11 +22,11 @@ export default function BuyPage({ searchParams }: Props) {
       {/* Page header — theme-aware */}
       <div className="pt-28 min-h-[40vh] flex items-center justify-center relative">
         <div className="text-center px-4 relative z-10">
-          <div className="inline-block liquid-glass rounded-3xl px-8 py-6 mb-6">
-            <h1 className="font-heading text-text-primary text-4xl md:text-5xl leading-tight mb-3">
-              Buy Data
+          <div className="mb-8">
+            <h1 className="font-heading text-text-primary text-4xl md:text-5xl leading-tight tracking-tight mb-3">
+              Buy data
             </h1>
-            <p className="text-text-secondary font-barlow font-light">
+            <p className="text-text-secondary font-barlow">
               Pick your network, choose a bundle, and get fast delivery.
             </p>
           </div>

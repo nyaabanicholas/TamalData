@@ -57,7 +57,7 @@ export function PayoutForm({ balance, minPayout }: { balance: number; minPayout:
   if (success) return (
     <div className="text-center py-8">
       <CheckCircle2 className="h-14 w-14 text-color-success mx-auto mb-4" strokeWidth={1.3} />
-      <p className="font-display font-bold text-xl text-text-primary mb-2">Payout Sent!</p>
+      <p className="font-display font-semibold text-xl tracking-tight tabular-nums text-text-primary mb-2">Payout Sent!</p>
       <p className="text-text-secondary text-sm font-barlow">
         <span className="font-semibold text-text-primary">{formatGHS(success.amount)}</span> is on its way to {success.phone}.
         Allow a few minutes for the MoMo credit to arrive.
@@ -70,7 +70,7 @@ export function PayoutForm({ balance, minPayout }: { balance: number; minPayout:
       {/* Amount */}
       <div>
         <label className="text-xs text-text-muted uppercase tracking-widest block mb-2">
-          Amount (GH₵) — Balance: <span className="text-accent-primary font-semibold">{formatGHS(balance)}</span>
+          Amount (GH₵). Balance: <span className="text-accent-primary font-semibold">{formatGHS(balance)}</span>
         </label>
         <input
           type="number"

@@ -17,13 +17,13 @@ export function NetworkStep() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="mb-10 relative z-10 liquid-glass-strong rounded-2xl px-6 py-4"
+        className="mb-8 relative z-10"
       >
-        <h2 className="font-heading text-3xl text-text-primary mb-2">
-          Choose Your Network
+        <h2 className="font-display text-xl font-semibold text-text-primary mb-1.5">
+          Choose your network
         </h2>
         <p className="text-text-secondary max-w-sm mx-auto font-barlow font-medium">
-          Select the network you want to top up. Data is delivered in under 1 hour.
+          Select the network you want to top up.
         </p>
       </motion.div>
 

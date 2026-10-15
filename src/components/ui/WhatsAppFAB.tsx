@@ -12,7 +12,8 @@ export function WhatsAppFAB() {
   // On mount, set initial bottom position in pixel terms
   useEffect(() => {
     if (typeof window !== "undefined" && pos.y === -1) {
-      setPos((p) => ({ ...p, y: window.innerHeight - 80 }));
+      // Bottom-right by default (pill is ~142px wide); left side clashed with dashboard rails
+      setPos({ x: Math.max(16, window.innerWidth - 158), y: window.innerHeight - 80 });
     }
   }, [pos.y]);
 

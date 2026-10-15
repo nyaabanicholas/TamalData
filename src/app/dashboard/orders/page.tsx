@@ -5,6 +5,8 @@ import Link from "next/link";
 import { formatGHS } from "@/lib/utils";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { GlassPanel } from "@/components/ui/GlassPanel";
+import { Inbox } from "lucide-react";
+import { IconTile } from "@/components/ui/IconTile";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Order History" };
@@ -44,17 +46,9 @@ export default async function OrderHistoryPage({
   return (
     <main className="min-h-screen bg-bg-base">
       <div className="container-content pt-28 pb-10">
-        <div className="flex items-center gap-3 mb-8">
-          <Link href="/dashboard" className="text-text-muted hover:text-text-primary text-sm transition-colors">
-            ← Dashboard
-          </Link>
-          <span className="text-text-muted">/</span>
-          <span className="text-text-primary text-sm font-medium">Order History</span>
-        </div>
-
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="font-display font-extrabold text-3xl text-text-primary">Order History</h1>
+            <h1 className="font-heading text-3xl md:text-4xl tracking-tight text-text-primary">Order History</h1>
             <p className="text-text-muted text-sm mt-1">{total} total orders</p>
           </div>
 
@@ -78,7 +72,7 @@ export default async function OrderHistoryPage({
 
         {orders.length === 0 ? (
           <GlassPanel className="p-16 text-center">
-            <p className="text-5xl mb-4">📭</p>
+            <IconTile icon={Inbox} />
             <p className="font-semibold text-text-secondary text-lg">No orders found</p>
             <p className="text-sm text-text-muted mt-2">
               {status ? `No ${status.toLowerCase()} orders yet.` : "You haven't placed any orders yet."}

@@ -6,7 +6,7 @@ import { TrendingUp } from "lucide-react";
 
 export function ResellerBanner() {
   return (
-    <section className="section-padding relative overflow-hidden bg-orbs">
+    <section className="section-padding relative overflow-hidden">
       <div
         className="absolute inset-0 pointer-events-none"
         style={{

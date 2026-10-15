@@ -38,13 +38,10 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
   ]);
 
   return (
-    <div className="min-h-screen bg-bg-base p-8">
+    <div className="min-h-screen bg-bg-base px-4 py-8 sm:px-8">
       <div className="max-w-content mx-auto">
-        <div className="flex items-center gap-4 mb-8">
-          <a href="/admin" className="text-text-muted hover:text-text-primary text-sm transition-colors">
-            ← Dashboard
-          </a>
-          <h1 className="font-display font-bold text-3xl text-text-primary">
+        <div className="flex flex-wrap items-end gap-4 mb-8">
+          <h1 className="font-heading text-3xl md:text-4xl tracking-tight text-text-primary">
             Orders
           </h1>
           <span className="text-text-muted text-sm ml-auto">{total} total</span>

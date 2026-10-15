@@ -6,6 +6,8 @@ import { formatGHS } from "@/lib/utils";
 import Link from "next/link";
 import type { Metadata } from "next";
 import type { Network } from "@/types";
+import { Users } from "lucide-react";
+import { IconTile } from "@/components/ui/IconTile";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "My Customers" };
@@ -91,7 +93,7 @@ export default async function CustomersPage() {
     <div className="container-content pt-4 pb-10">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="font-display font-extrabold text-3xl text-text-primary">My Customers</h1>
+          <h1 className="font-heading text-3xl md:text-4xl tracking-tight text-text-primary">My Customers</h1>
           <p className="text-text-secondary text-sm mt-1">
             Track and manage your customer base
           </p>
@@ -112,7 +114,7 @@ export default async function CustomersPage() {
           { label: "Avg. Order Value", value: totalCustomerOrders > 0 ? formatGHS(totalCustomerRevenue / totalCustomerOrders) : "GH₵0.00", color: "var(--color-warning)" },
         ].map((s) => (
           <GlassPanel key={s.label} className="p-4">
-            <p className="text-xs text-text-muted uppercase tracking-widest mb-1">{s.label}</p>
+            <p className="text-sm text-text-muted mb-1">{s.label}</p>
             <p className="font-display font-bold text-xl" style={{ color: s.color }}>{s.value}</p>
           </GlassPanel>
         ))}
@@ -126,7 +128,7 @@ export default async function CustomersPage() {
           const revenue = data?.revenue ?? 0;
           return (
             <GlassPanel key={net} className="p-4 text-center">
-              <p className="text-xs text-text-muted uppercase tracking-wider mb-1">{net}</p>
+              <p className="text-sm text-text-muted mb-1">{net}</p>
               <p className="font-display font-bold text-xl" style={{ color: NETWORK_COLORS[net] }}>
                 {count}
               </p>
@@ -143,7 +145,7 @@ export default async function CustomersPage() {
         <h2 className="font-display font-bold text-lg text-text-primary mb-4">Recent Customers</h2>
         {customers.length === 0 ? (
           <GlassPanel className="p-12 text-center">
-            <p className="text-4xl mb-3">👥</p>
+            <IconTile icon={Users} />
             <p className="font-medium text-text-secondary">No customers yet</p>
             <p className="text-sm text-text-muted mt-1">
               Customers will appear here when they purchase from your store

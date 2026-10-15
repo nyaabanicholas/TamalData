@@ -93,7 +93,7 @@ export function AdminWalletAdjust({ userId }: { userId: string }) {
         type="submit"
         disabled={!amount || !description || saving}
         className="px-5 py-2 rounded-xl text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-50 whitespace-nowrap"
-        style={{ background: "var(--gradient-cta)" }}
+        style={{ background: "var(--cta-fill)" }}
       >
         {saving ? "Processing..." : type === "CREDIT" ? "Add Funds" : "Deduct"}
       </button>

@@ -4,6 +4,9 @@ import { prisma } from "@/lib/prisma";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { GlassPanel } from "@/components/ui/GlassPanel";
+import { ClipboardList } from "lucide-react";
+import { IconTile } from "@/components/ui/IconTile";
+import { DashRail } from "@/components/ui/DashRail";
 
 export default async function ResellerLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -36,7 +39,7 @@ export default async function ResellerLayout({ children }: { children: React.Rea
       <main className="min-h-screen bg-bg-base flex items-center justify-center px-4 pt-28 pb-12">
         <div className="w-full max-w-md text-center">
           <div className="liquid-glass-strong rounded-2xl p-8">
-            <div className="text-6xl mb-4">📋</div>
+            <IconTile icon={ClipboardList} className="h-14 w-14" />
             <h1 className="font-heading text-2xl text-text-primary mb-2">Become a Reseller</h1>
             <p className="text-text-secondary font-barlow text-sm mb-6">
               Access wholesale pricing, your own storefront, and customer management.
@@ -45,7 +48,7 @@ export default async function ResellerLayout({ children }: { children: React.Rea
               <Link
                 href="/auth/upgrade-to-reseller"
                 className="w-full rounded-xl py-3 text-sm font-semibold text-white"
-                style={{ background: "var(--gradient-cta)" }}
+                style={{ background: "var(--cta-fill)" }}
               >
                 Upgrade My Account to Reseller
               </Link>
@@ -57,7 +60,7 @@ export default async function ResellerLayout({ children }: { children: React.Rea
               <Link
                 href="/auth/register?role=reseller"
                 className="w-full rounded-xl py-3 text-sm font-semibold text-white"
-                style={{ background: "var(--gradient-cta)" }}
+                style={{ background: "var(--cta-fill)" }}
               >
                 Create New Reseller Account
               </Link>
@@ -77,7 +80,7 @@ export default async function ResellerLayout({ children }: { children: React.Rea
               <li>• Set your own bundle prices</li>
               <li>• Track earnings and request payouts</li>
               <li>• Customer management and analytics</li>
-              <li>• Free to apply — no upfront fees</li>
+              <li>• Free to apply, no upfront fees</li>
             </ul>
           </GlassPanel>
         </div>
@@ -86,8 +89,9 @@ export default async function ResellerLayout({ children }: { children: React.Rea
   }
 
   return (
-    <div className="min-h-screen bg-bg-base">
-      <main className="pt-20">{children}</main>
+    <div className="flex min-h-screen bg-bg-base">
+      <DashRail />
+      <main className="min-w-0 flex-1 pt-20">{children}</main>
     </div>
   );
 }

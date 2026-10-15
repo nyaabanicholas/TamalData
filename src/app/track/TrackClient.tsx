@@ -8,6 +8,7 @@ import { GlowButton } from "@/components/ui/GlowButton";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Search, RefreshCw, Copy, Check } from "lucide-react";
 import type { OrderRecord } from "@/types";
+import { SUPPORT_WHATSAPP_URL } from "@/lib/contact";
 
 const PAYMENT_METHOD_LABEL: Record<string, string> = {
   MTN_MOMO:         "MTN Mobile Money",
@@ -160,7 +161,7 @@ export function TrackClient() {
             {order.status === "FAILED" && (
               <div className="mt-4">
                 <p className="text-red-400 text-sm mb-3">{order.failureReason ?? "Delivery failed."}</p>
-                <a href="https://wa.me/233000000000" target="_blank" rel="noopener noreferrer">
+                <a href={SUPPORT_WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
                   <GlowButton variant="ghost" size="sm">Contact Support</GlowButton>
                 </a>
               </div>

@@ -1,18 +1,13 @@
 import {ClerkProvider} from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk, JetBrains_Mono, Fauna_One, Barlow } from "next/font/google";
-import nextDynamic from "next/dynamic";
 import { Providers } from "@/components/providers";
 import { Navbar } from "@/components/ui/Navbar";
 import { Preloader } from "@/components/ui/Preloader";
-import { WhatsAppFAB } from "@/components/ui/WhatsAppFAB";
+import { SupportWidgets } from "@/components/ui/SupportWidgets";
 import { FooterWrapper } from "@/components/ui/FooterWrapper";
+import { GoogleAnalytics } from "@/components/ui/GoogleAnalytics";
 import "./globals.css";
-
-const TawkToWidget = nextDynamic(
-  () => import("@/components/ui/TawkToWidget").then((m) => m.TawkToWidget),
-  { ssr: false }
-);
 
 const inter = Inter({
   subsets: ["latin"],
@@ -102,6 +97,12 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* First visit per session: cover with the curtain before first paint (see Preloader.tsx) */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(!sessionStorage.getItem("__intro")){sessionStorage.setItem("__intro","1");document.documentElement.dataset.intro="1"}}catch(e){}`,
+          }}
+        />
       </head>
       <body className="bg-bg-base text-text-primary antialiased">
         <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
@@ -110,7 +111,7 @@ export default function RootLayout({
           {/* Global orb layer — fixed between body bg and content */}
           <div
           className="fixed inset-0 pointer-events-none overflow-hidden"
-          style={{ zIndex: 0, willChange: "transform", contain: "layout paint" }}
+          style={{ zIndex: 0, contain: "strict" }}
           aria-hidden="true"
           >
           <div className="global-orb global-orb-1" />
@@ -120,8 +121,8 @@ export default function RootLayout({
           <Navbar />
           {children}
           <FooterWrapper />
-          <WhatsAppFAB />
-          <TawkToWidget />
+          <SupportWidgets />
+          <GoogleAnalytics />
           </Providers>
         </ClerkProvider>
       </body>

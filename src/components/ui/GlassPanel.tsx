@@ -9,8 +9,8 @@ export function GlassPanel({ children, className, hover = false, ...props }: Gla
   return (
     <div
       className={cn(
-        "liquid-glass rounded-card p-6",
-        hover && "transition-all duration-300 hover:border-accent-primary/30 hover:-translate-y-1 hover:shadow-glow-sm",
+        "liquid-glass rounded-[1.25rem] p-6",
+        hover && "transition-[transform,border-color,box-shadow] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-accent-primary/30 hover:-translate-y-1 hover:shadow-glow-sm",
         className
       )}
       {...props}

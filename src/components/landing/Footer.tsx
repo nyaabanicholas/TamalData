@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Mail, MapPin, MessageCircle } from "lucide-react";
+import { SUPPORT_WHATSAPP_URL } from "@/lib/contact";
 
 export function Footer() {
   return (
@@ -55,7 +56,7 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a href="https://wa.me/233000000000" className="hover:text-accent-primary transition-colors flex items-center gap-2" target="_blank" rel="noopener noreferrer">
+                <a href={SUPPORT_WHATSAPP_URL} className="hover:text-accent-primary transition-colors flex items-center gap-2" target="_blank" rel="noopener noreferrer">
                   <MessageCircle className="h-4 w-4 shrink-0 text-accent-primary" />
                   WhatsApp Support
                 </a>

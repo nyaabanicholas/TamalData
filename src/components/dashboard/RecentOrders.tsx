@@ -5,6 +5,8 @@ import Link from "next/link";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import type { OrderStatus } from "@/types";
 import { formatGHS } from "@/lib/utils";
+import { Inbox } from "lucide-react";
+import { IconTile } from "@/components/ui/IconTile";
 
 interface Order {
   id: string;
@@ -25,15 +27,14 @@ export function RecentOrders({ orders }: RecentOrdersProps) {
   if (orders.length === 0) {
     return (
       <div className="liquid-glass rounded-2xl p-12 text-center">
-        <p className="text-4xl mb-3">📭</p>
+        <IconTile icon={Inbox} />
         <p className="font-medium text-text-secondary">No orders yet</p>
         <p className="text-sm text-text-muted mt-1 mb-6">Your orders will appear here.</p>
         <Link
           href="/buy"
-          className="inline-block rounded-xl px-5 py-2.5 text-sm font-semibold text-white"
-          style={{ background: "var(--gradient-cta)" }}
+          className="inline-block rounded-full bg-accent-primary px-5 py-2.5 text-sm font-semibold text-white transition-transform duration-200 active:scale-[0.98]"
         >
-          Buy Your First Bundle
+          Buy your first bundle
         </Link>
       </div>
     );

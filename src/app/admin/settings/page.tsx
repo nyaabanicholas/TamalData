@@ -22,7 +22,7 @@ export default async function AdminSettingsPage() {
 
   return (
     <div className="container-content py-10 max-w-xl">
-      <h1 className="font-display font-extrabold text-3xl text-text-primary mb-2">Site Settings</h1>
+      <h1 className="font-heading text-3xl md:text-4xl tracking-tight text-text-primary mb-2">Site Settings</h1>
       <p className="text-text-secondary mb-8">Configure global platform behaviour.</p>
       <SettingsForm settings={{ ...settings, referralCommission: Number(settings.referralCommission), minPayoutAmount: Number(settings.minPayoutAmount) }} />
     </div>

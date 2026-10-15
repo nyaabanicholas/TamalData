@@ -52,7 +52,7 @@ export default function UpgradeToResellerPage() {
               <Link
                 href="/reseller"
                 className="inline-block w-full rounded-xl py-3 text-sm font-semibold text-white mb-3"
-                style={{ background: "var(--gradient-cta)" }}
+                style={{ background: "var(--cta-fill)" }}
               >
                 Go to Reseller Portal
               </Link>
@@ -82,7 +82,7 @@ export default function UpgradeToResellerPage() {
                 onClick={handleUpgrade}
                 disabled={loading}
                 className="w-full rounded-xl py-3 text-sm font-semibold text-white mb-4 disabled:opacity-60"
-                style={{ background: "var(--gradient-cta)" }}
+                style={{ background: "var(--cta-fill)" }}
               >
                 {loading ? "Submitting..." : "Apply for Reseller Account"}
               </button>

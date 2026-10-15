@@ -31,7 +31,8 @@ export function TawkToWidget() {
   useEffect(() => {
     setMounted(true);
     // Place above WhatsApp FAB (which sits at bottom-right ~80px from bottom)
-    setPos(p => ({ ...p, y: window.innerHeight - 160 }));
+    // Bottom-right, stacked above the WhatsApp pill (button is 56px)
+    setPos({ x: Math.max(16, window.innerWidth - 72), y: window.innerHeight - 160 });
 
     const setupTawk = () => {
       window.Tawk_API?.hideWidget?.();

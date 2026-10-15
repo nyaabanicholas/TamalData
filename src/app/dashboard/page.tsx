@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { WelcomeBanner } from "@/components/dashboard/WelcomeBanner";
-import { SystemStatusBar } from "@/components/dashboard/SystemStatusBar";
 import { StatStrip } from "@/components/dashboard/StatStrip";
 import { PlaceNewOrder } from "@/components/dashboard/PlaceNewOrder";
 import { RecentOrders } from "@/components/dashboard/RecentOrders";
@@ -62,34 +61,25 @@ export default async function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-bg-base">
-      <div className="container-content pt-28 pb-8 space-y-5">
+      <div className="container-content pt-28 pb-12 space-y-4">
 
-        {/* Welcome banner with quick actions */}
-        <WelcomeBanner name={user?.name ?? (user?.phone ?? "there")} role={user?.role} />
+        <WelcomeBanner name={user?.name ?? user?.phone ?? "Welcome back"} role={user?.role} walletBalance={walletBalance} />
 
-        {/* System status bar */}
-        <SystemStatusBar />
-
-        {/* Stat strip — animated count-ups */}
         <StatStrip
-          walletBalance={walletBalance}
           ordersToday={ordersToday}
           gbSold={gbSold}
           revenueToday={revenueToday}
           profitToday={profitToday}
+          showMargin={user?.role === "RESELLER"}
         />
 
         {/* Main grid: buy order + quick actions side-by-side */}
-        <div className="grid lg:grid-cols-[1fr_280px] gap-5">
+        <div className="grid lg:grid-cols-[1fr_320px] gap-4">
           <PlaceNewOrder />
           <QuickActions />
         </div>
 
-        {/* Quick Buy widget */}
-        <div>
-          <h2 className="font-heading text-base text-text-primary mb-3 px-0.5">Quick Buy</h2>
-          <DashboardQuickBuy userId={userId} />
-        </div>
+        <DashboardQuickBuy userId={userId} />
 
         {/* Recent orders table */}
         <RecentOrders

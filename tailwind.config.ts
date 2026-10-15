@@ -1,6 +1,10 @@
 import type { Config } from "tailwindcss";
 import plugin from "tailwindcss/plugin";
 
+// Hex CSS vars can't take Tailwind's opacity modifier on their own; color-mix
+// lets `bg-accent-primary/10` etc. work while plain `bg-accent-primary` is unchanged.
+const a = (v: string) => `color-mix(in srgb, var(${v}) calc(<alpha-value> * 100%), transparent)`;
+
 const config: Config = {
   darkMode: "class",
   content: [
@@ -11,21 +15,23 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // All reference CSS variables — light/dark handled in globals.css
-        "bg-base":      "var(--bg-base)",
-        "bg-surface":   "var(--bg-surface)",
-        "bg-elevated":  "var(--bg-elevated)",
-        "accent-primary":  "var(--accent-primary)",
-        "accent-glow":     "var(--accent-glow)",
-        "accent-orange":   "var(--accent-orange)",
-        "accent-cyan":     "var(--accent-cyan)",
-        "text-primary":    "var(--text-primary)",
-        "text-secondary":  "var(--text-secondary)",
-        "text-muted":      "var(--text-muted)",
-        "color-success":   "var(--color-success)",
-        "color-warning":   "var(--color-warning)",
-        "color-error":     "var(--color-error)",
-        "color-border":    "var(--color-border)",
+        // All reference CSS variables (light/dark in globals.css). Wrapped with a()
+        // so opacity modifiers like bg-color-error/10 actually generate.
+        "bg-base":      a("--bg-base"),
+        "bg-surface":   a("--bg-surface"),
+        "bg-elevated":  a("--bg-elevated"),
+        "accent-primary":  a("--accent-primary"),
+        "accent-glow":     a("--accent-glow"),
+        "accent-orange":   a("--accent-orange"),
+        "accent-cyan":     a("--accent-cyan"),
+        "accent-purple":   a("--accent-purple"),
+        "text-primary":    a("--text-primary"),
+        "text-secondary":  a("--text-secondary"),
+        "text-muted":      a("--text-muted"),
+        "color-success":   a("--color-success"),
+        "color-warning":   a("--color-warning"),
+        "color-error":     a("--color-error"),
+        "color-border":    a("--color-border"),
       },
       fontFamily: {
         display: ["var(--font-space-grotesk)", "sans-serif"],
@@ -51,7 +57,7 @@ const config: Config = {
       },
       backgroundImage: {
         "hero-gradient": "var(--gradient-hero)",
-        "cta-gradient":  "linear-gradient(90deg, #009DF9 0%, #FE8E01 100%)",
+        "cta-gradient":  "var(--cta-fill)",
       },
       keyframes: {
         shimmer: {

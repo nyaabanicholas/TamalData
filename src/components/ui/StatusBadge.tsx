@@ -7,31 +7,31 @@ const STATUS_CONFIG: Record<
 > = {
   PENDING: {
     label: "Pending",
-    className: "bg-text-muted/20 text-text-muted",
+    className: "bg-text-muted/10 text-text-muted ring-text-muted/25",
   },
   PAYMENT_CONFIRMED: {
     label: "Payment Confirmed",
-    className: "bg-color-warning/20 text-color-warning",
+    className: "bg-color-warning/10 text-color-warning ring-color-warning/25",
   },
   PENDING_FULFILLMENT: {
     label: "Awaiting Fulfillment",
-    className: "bg-accent-primary/20 text-accent-primary",
+    className: "bg-accent-primary/10 text-accent-primary ring-accent-primary/25",
   },
   PROCESSING: {
     label: "Processing",
-    className: "bg-color-warning/20 text-color-warning",
+    className: "bg-color-warning/10 text-color-warning ring-color-warning/25",
   },
   DELIVERED: {
     label: "Delivered",
-    className: "bg-color-success/20 text-color-success",
+    className: "bg-color-success/10 text-color-success ring-color-success/25",
   },
   FAILED: {
     label: "Failed",
-    className: "bg-color-error/20 text-color-error",
+    className: "bg-color-error/10 text-color-error ring-color-error/25",
   },
   REFUNDED: {
     label: "Refunded",
-    className: "bg-accent-purple/20 text-accent-purple",
+    className: "bg-accent-purple/10 text-accent-purple ring-accent-purple/25",
   },
 };
 
@@ -45,11 +45,12 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
+        "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset",
         statusClass,
         className
       )}
     >
+      <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true" />
       {label}
     </span>
   );

@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { useUser, useClerk } from "@clerk/nextjs";
 
-interface SidebarItem {
+export interface SidebarItem {
   href: string;
   label: string;
   icon: LucideIcon;
@@ -43,9 +43,6 @@ const DASHBOARD_SIDEBAR_ITEMS: (SidebarItem | "divider")[] = [
   { href: "/dashboard/orders", label: "My Orders", icon: FileText },
   { href: "/dashboard/referrals", label: "Refer & Earn", icon: Gift },
   { href: "/dashboard/saved-numbers", label: "Saved Numbers", icon: BookOpen },
-  "divider",
-  { href: "/about", label: "API Documentation", icon: BookOpen },
-  { href: "/about", label: "Tutorials & Guides", icon: FileText },
 ];
 
 const RESELLER_SIDEBAR_ITEMS: (SidebarItem | "divider")[] = [
@@ -61,8 +58,6 @@ const RESELLER_SIDEBAR_ITEMS: (SidebarItem | "divider")[] = [
   { href: "/reseller/pricing", label: "Pricing", icon: CreditCard },
   { href: "/reseller/earnings", label: "Earnings", icon: Wallet },
   { href: "/reseller/storefront", label: "Storefront", icon: Globe },
-  "divider",
-  { href: "/about", label: "API Docs", icon: BookOpen },
 ];
 
 const ADMIN_SIDEBAR_ITEMS: (SidebarItem | "divider")[] = [
@@ -78,13 +73,13 @@ const ADMIN_SIDEBAR_ITEMS: (SidebarItem | "divider")[] = [
   { href: "/admin/settings", label: "Settings", icon: FileText },
 ];
 
-function getSidebarItems(pathname: string): (SidebarItem | "divider")[] {
+export function getSidebarItems(pathname: string): (SidebarItem | "divider")[] {
   if (pathname.startsWith("/admin")) return ADMIN_SIDEBAR_ITEMS;
   if (pathname.startsWith("/reseller")) return RESELLER_SIDEBAR_ITEMS;
   return DASHBOARD_SIDEBAR_ITEMS;
 }
 
-function getContextLabel(pathname: string): string {
+export function getContextLabel(pathname: string): string {
   if (pathname.startsWith("/admin")) return "Admin Panel";
   if (pathname.startsWith("/reseller")) return "Reseller Portal";
   return "My Dashboard";

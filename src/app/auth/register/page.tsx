@@ -172,7 +172,7 @@ export default function RegisterPage() {
               type="submit"
               disabled={loading}
               className="w-full flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-60"
-              style={{ background: "var(--gradient-cta)" }}
+              style={{ background: "var(--cta-fill)" }}
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Create Account"}
             </button>

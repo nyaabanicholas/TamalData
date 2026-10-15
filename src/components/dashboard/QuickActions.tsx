@@ -1,47 +1,36 @@
-"use client";
-
-import { motion } from "framer-motion";
 import Link from "next/link";
-import { ShoppingBag, History, BookMarked, Search, Store, Users } from "lucide-react";
+import { BookMarked, Search, Store, Gift, ChevronRight } from "lucide-react";
 
 const ACTIONS = [
-  { href: "/buy",                       icon: ShoppingBag, label: "Buy Data",      color: "var(--accent-primary)" },
-  { href: "/dashboard/orders",          icon: History,     label: "Orders",         color: "var(--accent-orange)" },
-  { href: "/dashboard/saved-numbers",   icon: BookMarked,  label: "Saved Numbers",  color: "var(--accent-cyan)" },
-  { href: "/track",                     icon: Search,      label: "Track Order",    color: "var(--color-warning)" },
-  { href: "/reseller",                  icon: Store,       label: "Reseller",       color: "var(--color-success)" },
-  { href: "/dashboard/referrals",       icon: Users,       label: "Referrals",      color: "var(--accent-primary)" },
+  { href: "/dashboard/saved-numbers", icon: BookMarked, label: "Saved numbers", hint: "Faster checkout" },
+  { href: "/track",                   icon: Search,     label: "Track an order", hint: "By reference or phone" },
+  { href: "/dashboard/referrals",     icon: Gift,       label: "Refer and earn", hint: "Commission on every order" },
+  { href: "/reseller",                icon: Store,      label: "Reseller portal", hint: "Wholesale pricing" },
 ];
 
 export function QuickActions() {
   return (
-    <div className="liquid-glass rounded-2xl p-5">
-      <h2 className="font-heading text-base text-text-primary mb-4">Quick Actions</h2>
-      <div className="grid grid-cols-3 gap-2.5">
-        {ACTIONS.map((a, i) => (
-          <motion.div
-            key={a.href}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: i * 0.04, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          >
+    <div className="liquid-glass rounded-[1.25rem] p-3">
+      <h2 className="px-3 pb-2 pt-2 text-sm font-medium text-text-muted">Shortcuts</h2>
+      <ul>
+        {ACTIONS.map((a) => (
+          <li key={a.href}>
             <Link
               href={a.href}
-              className="liquid-glass-hover liquid-glass flex flex-col items-center gap-2 rounded-xl p-3.5 text-center"
+              className="group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors duration-200 hover:bg-bg-elevated/60"
             >
-              <span
-                className="flex h-9 w-9 items-center justify-center rounded-xl"
-                style={{ background: `${a.color}18` }}
-              >
-                <a.icon className="h-4.5 w-4.5" style={{ color: a.color }} strokeWidth={1.5} />
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent-primary/10 text-accent-primary ring-1 ring-inset ring-accent-primary/15">
+                <a.icon className="h-4 w-4" strokeWidth={1.5} />
               </span>
-              <span className="text-[11px] font-barlow font-semibold text-text-secondary leading-tight">
-                {a.label}
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-medium text-text-primary">{a.label}</span>
+                <span className="block truncate text-xs text-text-muted">{a.hint}</span>
               </span>
+              <ChevronRight className="h-4 w-4 text-text-muted transition-transform duration-200 group-hover:translate-x-0.5" />
             </Link>
-          </motion.div>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 }

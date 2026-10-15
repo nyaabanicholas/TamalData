@@ -11,6 +11,7 @@
   --accent-glow: #33B5FF;
   --accent-orange: #FE8E01;
   --accent-cyan: #009DF9;
+  --accent-purple: #7C3AED;
   --text-primary: #0A0C1B;
   --text-secondary: #3A4070;
   --text-muted: #5560A0;
@@ -21,6 +22,8 @@
 
   --gradient-hero: linear-gradient(135deg, #EBF0FF 0%, #F4F6FF 50%, #EDE9FF 100%);
   --gradient-cta: linear-gradient(90deg, #009DF9 0%, #FE8E01 100%);
+  /* Button fill: solid brand blue with a soft top sheen (gradient-cta stays for brand text) */
+  --cta-fill: linear-gradient(180deg, #22ABFF 0%, #008FE6 100%);
   --shadow-glow: 0 0 40px rgba(0,157,249,0.18), 0 0 80px rgba(254,142,1,0.08);
   --shadow-glow-sm: 0 0 20px rgba(0,157,249,0.14), 0 0 40px rgba(254,142,1,0.06);
 
@@ -33,9 +36,9 @@
   --glass-border-media: rgba(255,255,255,0.18);
   --glass-shine-media: rgba(255,255,255,0.12);
 
-  --orb-core-1: rgba(0,157,249,0.52);  --orb-mid-1: rgba(0,157,249,0.18);
-  --orb-core-2: rgba(254,142,1,0.46);  --orb-mid-2: rgba(254,142,1,0.12);
-  --orb-core-3: rgba(0,157,249,0.30);   --orb-mid-3: rgba(0,157,249,0.08);
+  --orb-core-1: rgba(0,157,249,0.30);  --orb-mid-1: rgba(0,157,249,0.11);
+  --orb-core-2: rgba(254,142,1,0.24);  --orb-mid-2: rgba(254,142,1,0.08);
+  --orb-core-3: rgba(0,157,249,0.18);   --orb-mid-3: rgba(0,157,249,0.05);
   --orb-1: rgba(0,157,249,0.22);
   --orb-2: rgba(254,142,1,0.18);
   --orb-3: rgba(0,157,249,0.14);
@@ -79,6 +82,7 @@
   --accent-glow: #33B5FF;
   --accent-orange: #FE8E01;
   --accent-cyan: #009DF9;
+  --accent-purple: #A78BFA;
   --text-primary: #F0F2FF;
   --text-secondary: #B8BEE0;
   --text-muted: #959CC8;
@@ -100,9 +104,9 @@
   --glass-border-media: rgba(255,255,255,0.20);
   --glass-shine-media: rgba(255,255,255,0.14);
 
-  --orb-core-1: rgba(0,157,249,0.75);  --orb-mid-1: rgba(0,157,249,0.30);
-  --orb-core-2: rgba(254,142,1,0.65);  --orb-mid-2: rgba(254,142,1,0.22);
-  --orb-core-3: rgba(0,157,249,0.48);  --orb-mid-3: rgba(0,157,249,0.15);
+  --orb-core-1: rgba(0,157,249,0.34);  --orb-mid-1: rgba(0,157,249,0.12);
+  --orb-core-2: rgba(254,142,1,0.24);  --orb-mid-2: rgba(254,142,1,0.08);
+  --orb-core-3: rgba(0,157,249,0.20);  --orb-mid-3: rgba(0,157,249,0.06);
   --orb-1: rgba(0,157,249,0.22);
   --orb-2: rgba(254,142,1,0.14);
   --orb-3: rgba(0,157,249,0.11);
@@ -175,6 +179,30 @@
      The <body> provides the base color — <main> doesn't need its own. */
   main {
     background: transparent !important;
+  }
+
+  /* Data tables (dashboards/admin): steady numerals, quiet headers, soft row hover */
+  main table {
+    font-variant-numeric: tabular-nums;
+  }
+  main table thead th {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  main table tbody tr {
+    transition: background-color 0.2s ease;
+  }
+  main table tbody tr:hover {
+    background-color: rgba(0, 157, 249, 0.045);
+  }
+  main table tbody tr:last-child {
+    border-bottom-width: 0;
+  }
+
+  h1, h2, h3 {
+    text-wrap: balance;
   }
   }
 
@@ -259,8 +287,8 @@
   /* Base — for cards, panels, containers — increased blur & translucency */
   .liquid-glass {
     background: var(--glass-bg);
-    backdrop-filter: blur(32px) saturate(180%);
-    -webkit-backdrop-filter: blur(32px) saturate(180%);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
     border: 1px solid var(--glass-border);
     box-shadow:
       inset 0 1px 0 var(--glass-shine),
@@ -308,8 +336,8 @@
   /* Strong — for modals, dropdowns, prominent surfaces */
   .liquid-glass-strong {
     background: var(--glass-bg);
-    backdrop-filter: blur(72px) saturate(200%);
-    -webkit-backdrop-filter: blur(72px) saturate(200%);
+    backdrop-filter: blur(22px) saturate(150%);
+    -webkit-backdrop-filter: blur(22px) saturate(150%);
     border: 1px solid var(--glass-border);
     box-shadow:
       inset 0 1.5px 0 var(--glass-shine),
@@ -342,8 +370,8 @@
   /* Intense — for hero overlays, fullscreen panels */
   .liquid-glass-intense {
     background: var(--glass-bg);
-    backdrop-filter: blur(80px) saturate(200%);
-    -webkit-backdrop-filter: blur(80px) saturate(200%);
+    backdrop-filter: blur(28px) saturate(150%);
+    -webkit-backdrop-filter: blur(28px) saturate(150%);
     border: 1px solid var(--glass-border);
     box-shadow:
       inset 0 1.5px 0 var(--glass-shine),
@@ -373,8 +401,8 @@
   /* Media glass — always dark-translucent in BOTH themes (for elements over dark video) */
   .liquid-glass-media {
     background: var(--glass-bg-media);
-    backdrop-filter: blur(48px) saturate(160%);
-    -webkit-backdrop-filter: blur(48px) saturate(160%);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
     border: 1px solid var(--glass-border-media);
     box-shadow:
       inset 0 1.5px 0 var(--glass-shine-media),
@@ -415,7 +443,6 @@
       rgba(0,157,249,0.08) 48%,
       transparent 72%
     );
-    animation: dark-shine-drift 8s ease-in-out infinite;
   }
   .dark .liquid-glass-strong::before {
     background: linear-gradient(
@@ -425,14 +452,13 @@
       rgba(0,157,249,0.06) 45%,
       transparent 68%
     );
-    animation: dark-shine-drift 10s ease-in-out infinite;
   }
 
   /* Glass button — glassmorphic button with better visual definition */
   .liquid-glass-btn {
     background: var(--glass-bg);
-    backdrop-filter: blur(24px) saturate(160%);
-    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
     border: 1.5px solid var(--accent-primary);
     box-shadow:
       inset 0 1px 0 var(--glass-shine),
@@ -587,75 +613,57 @@
     color: rgba(246, 247, 255, 0.82);
     text-shadow: 0 2px 18px rgba(0, 0, 0, 0.82);
   }
+  /* WhySection: video dissolves into its stage instead of hard edges */
+  .why-video-mask {
+    -webkit-mask-image: radial-gradient(ellipse 85% 80% at 50% 40%, #000 55%, transparent 100%);
+    mask-image: radial-gradient(ellipse 85% 80% at 50% 40%, #000 55%, transparent 100%);
+  }
+  .why-card {
+    background: linear-gradient(180deg, rgba(14, 17, 34, 0.55), rgba(8, 10, 22, 0.72));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 20px 40px -20px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+  }
+  .why-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(0, 157, 249, 0.3);
+  }
+
   /* ─── Global orb — one shared layer mounted in layout.tsx ──────────── */
   .global-orb {
     position: absolute;
     border-radius: 50%;
     pointer-events: none;
-    will-change: transform;
   }
   .global-orb-1 {
     width: 1100px;
     height: 1100px;
-    background: radial-gradient(circle at 38% 38%, var(--orb-core-1) 0%, var(--orb-mid-1) 42%, transparent 70%);
+    background: radial-gradient(closest-side, var(--orb-core-1) 0%, var(--orb-mid-1) 38%, transparent 100%);
     top: 5%;
     left: -20%;
-    animation: orb-drift-1 180s ease-in-out infinite;
-    filter: blur(90px);
   }
   .global-orb-2 {
     width: 900px;
     height: 900px;
-    background: radial-gradient(circle at 62% 60%, var(--orb-core-2) 0%, var(--orb-mid-2) 44%, transparent 70%);
+    background: radial-gradient(closest-side, var(--orb-core-2) 0%, var(--orb-mid-2) 38%, transparent 100%);
     bottom: 10%;
     right: -15%;
-    animation: orb-drift-2 210s ease-in-out infinite;
-    filter: blur(80px);
   }
   .global-orb-accent {
     width: 700px;
     height: 700px;
-    background: radial-gradient(circle at 50% 45%, var(--orb-core-3) 0%, var(--orb-mid-3) 46%, transparent 72%);
+    background: radial-gradient(closest-side, var(--orb-core-3) 0%, var(--orb-mid-3) 40%, transparent 100%);
     top: 45%;
     left: 50%;
     transform: translate(-50%, -50%);
-    animation: orb-drift-3 240s ease-in-out infinite;
-    filter: blur(100px);
   }
 
-  /* Legacy per-section orbs — keep for any components still using it */
-  .bg-orbs {
-    position: relative;
-    overflow: hidden;
-    isolation: isolate;
-  }
-  .bg-orbs::before,
-  .bg-orbs::after {
-    content: "";
-    position: absolute;
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: -1;
-  }
-  .bg-orbs::before {
-    width: 600px;
-    height: 600px;
-    background: var(--orb-1);
-    top: -10%;
-    left: -10%;
-    animation: orb-drift-1 20s ease-in-out infinite;
-    filter: blur(80px);
-    opacity: 0.4;
-  }
-  .bg-orbs::after {
-    width: 500px;
-    height: 500px;
-    background: var(--orb-2);
-    bottom: -15%;
-    right: -10%;
-    animation: orb-drift-2 25s ease-in-out infinite;
-    filter: blur(80px);
-    opacity: 0.35;
+  /* Hero media layer dissolves into the page instead of ending in a hard band */
+  .hero-media-mask {
+    -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
   }
 
   /* Section fade edges — smooth top/bottom blends between sections */
@@ -700,60 +708,20 @@
     }
   }
 
-  /* ── Mobile performance: smaller orbs, lighter blur, GPU hints ── */
+  /* ── Mobile performance: smaller orbs, lighter blur ── */
   @media (max-width: 768px) {
-    /* Slow orb animations on mobile — keep aesthetics, reduce GPU cost */
-    .global-orb-1 {
-      width: 800px;
-      height: 800px;
-      filter: blur(70px);
-      left: -25%;
-      animation-duration: 120s !important;
+    .global-orb-1 { width: 800px; height: 800px; left: -25%; }
+    .global-orb-2 { width: 700px; height: 700px; right: -20%; }
+    .global-orb-accent { width: 600px; height: 600px; }
+    .liquid-glass-glow::after { animation: none !important; }
+    .liquid-glass,
+    .liquid-glass-strong,
+    .liquid-glass-intense,
+    .liquid-glass-media {
+      backdrop-filter: blur(12px) saturate(140%);
+      -webkit-backdrop-filter: blur(12px) saturate(140%);
     }
-    .global-orb-2 {
-      width: 700px;
-      height: 700px;
-      filter: blur(60px);
-      right: -20%;
-      animation-duration: 140s !important;
-    }
-    .global-orb-accent {
-      width: 600px;
-      height: 600px;
-      filter: blur(70px);
-      animation-duration: 160s !important;
-    }
-    /* Stop dark glass shine animation on mobile */
-    .dark .liquid-glass::before,
-    .dark .liquid-glass-strong::before {
-      animation: none !important;
-    }
-    /* Stop rotating glow on mobile */
-    .liquid-glass-glow::after {
-      animation: none !important;
-    }
-    /* Reduce backdrop-filter cost substantially on mobile Android */
-    .liquid-glass {
-      backdrop-filter: blur(12px) saturate(150%);
-      -webkit-backdrop-filter: blur(12px) saturate(150%);
-    }
-    .liquid-glass-strong {
-      backdrop-filter: blur(24px) saturate(170%);
-      -webkit-backdrop-filter: blur(24px) saturate(170%);
-    }
-    .liquid-glass-intense, .liquid-glass-media {
-      backdrop-filter: blur(28px) saturate(160%);
-      -webkit-backdrop-filter: blur(28px) saturate(160%);
-    }
-    /* Promote animated elements to GPU layers */
-    [data-framer-motion], .motion-div {
-      transform: translateZ(0);
-      will-change: transform, opacity;
-    }
-    /* Use containment to limit paint areas */
-    .section-padding {
-      contain: layout style;
-    }
+    .section-padding { contain: layout style; }
   }
 }
 
@@ -821,4 +789,75 @@
 @keyframes dark-shine-drift {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.65; }
+}
+
+/* ─── Page curtain (Preloader.tsx): intro + route transitions ─────────── */
+.page-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-base);
+  transform: translate3d(0, 100%, 0);
+  pointer-events: none;
+  visibility: hidden;
+}
+.page-curtain[data-phase="cover"],
+.page-curtain[data-phase="reveal"],
+html[data-intro] .page-curtain {
+  visibility: visible;
+}
+.page-curtain-edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-primary) 30%, #fe8e01 70%, transparent);
+  opacity: 0.8;
+}
+.page-curtain-mark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.875rem;
+  opacity: 0;
+  transform: translate3d(0, 12px, 0);
+  transition: opacity 0.35s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.page-curtain[data-phase="cover"] {
+  transform: translate3d(0, 0, 0);
+  pointer-events: auto;
+  transition: transform 0.52s cubic-bezier(0.76, 0, 0.24, 1);
+}
+.page-curtain[data-phase="cover"] .page-curtain-mark {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.18s;
+}
+.page-curtain[data-phase="reveal"] {
+  transform: translate3d(0, -100%, 0);
+  transition: transform 0.7s cubic-bezier(0.76, 0, 0.24, 1);
+}
+.page-curtain[data-phase="reveal"] .page-curtain-mark {
+  opacity: 0;
+  transform: translate3d(0, -24px, 0);
+  transition-duration: 0.25s;
+}
+/* First paint of a session: covered before JS; auto-lifts if JS never runs */
+html[data-intro] .page-curtain {
+  transform: none;
+  animation: curtain-fallback-out 0.7s cubic-bezier(0.76, 0, 0.24, 1) 3s forwards;
+}
+html[data-intro] .page-curtain-mark {
+  opacity: 1;
+  transform: none;
+}
+@keyframes curtain-fallback-out {
+  to { transform: translate3d(0, -100%, 0); visibility: hidden; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-curtain { transition: none !important; }
 }

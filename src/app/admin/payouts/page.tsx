@@ -56,7 +56,7 @@ export default async function AdminPayoutsPage({
 
   return (
     <div className="container-content py-10">
-      <h1 className="font-display font-extrabold text-3xl text-text-primary mb-8">Payout Requests</h1>
+      <h1 className="font-heading text-3xl md:text-4xl tracking-tight text-text-primary mb-8">Payout Requests</h1>
 
       {/* Status filter pills */}
       <div className="flex gap-2 flex-wrap mb-6">

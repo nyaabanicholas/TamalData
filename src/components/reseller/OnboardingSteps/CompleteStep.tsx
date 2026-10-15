@@ -113,7 +113,7 @@ export function CompleteStep({ slug, onContinue }: CompleteStepProps) {
           <span className="text-xs font-bold uppercase tracking-widest text-color-success">Complete</span>
         </div>
         <h2 className="font-heading text-4xl md:text-5xl text-text-primary mb-4">
-          Your Store is Live! 🎉
+          Your store is live
         </h2>
         <p className="text-text-secondary max-w-2xl mx-auto font-barlow leading-relaxed">
           Congratulations! Your TamalData reseller store has been successfully created.

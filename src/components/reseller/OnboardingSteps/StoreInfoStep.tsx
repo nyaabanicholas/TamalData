@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { GlowButton } from "@/components/ui/GlowButton";
-import { Store } from "lucide-react";
+import { Phone, Store } from "lucide-react";
 
 interface StoreInfo {
   slug: string;
@@ -156,7 +156,7 @@ export function StoreInfoStep({ data, onChange, onNext, onBack }: StoreInfoStepP
             WhatsApp Number (Optional)
           </label>
           <div className="flex items-center gap-2">
-            <span className="text-text-muted text-sm">📱</span>
+            <Phone className="h-4 w-4 shrink-0 text-text-muted" strokeWidth={1.5} aria-hidden="true" />
             <input
               type="tel"
               value={data.whatsapp}

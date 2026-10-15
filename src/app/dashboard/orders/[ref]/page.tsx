@@ -70,7 +70,7 @@ export default async function OrderDetailPage({ params }: { params: { ref: strin
             <div>
               <p className="text-xs text-text-muted font-mono mb-1">{order.reference}</p>
               <h1 className="font-heading text-2xl text-text-primary">
-                {order.bundleSize} — {order.network}
+                {order.bundleSize} · {order.network}
               </h1>
               <p className="text-text-secondary text-sm mt-1">
                 {STATUS_DETAIL[order.status]}
@@ -104,7 +104,7 @@ export default async function OrderDetailPage({ params }: { params: { ref: strin
           <Row label="Order ID"       value={order.id}                                               mono />
           <Row label="Reference"      value={order.reference}                                        mono />
           <Row label="Network"        value={order.network} />
-          <Row label="Bundle"         value={`${order.bundleSize} — ${order.bundleValidity}`} />
+          <Row label="Bundle"         value={`${order.bundleSize} · ${order.bundleValidity}`} />
           <Row label="Recipient"      value={order.recipientPhone}                                   mono />
           <Row label="Amount Paid"    value={formatGHS(Number(order.sellPrice))} />
           <Row label="Payment Method" value={PAYMENT_METHOD_LABEL[order.paymentMethod as PaymentMethod] ?? order.paymentMethod} />

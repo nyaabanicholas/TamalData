@@ -39,7 +39,7 @@ export function FaqAccordion() {
   const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <section className="section-padding relative overflow-hidden bg-orbs">
+    <section className="section-padding relative overflow-hidden">
       <div className="container-content max-w-3xl mx-auto px-4 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 24 }}

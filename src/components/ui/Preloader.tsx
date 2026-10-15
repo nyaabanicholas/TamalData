@@ -1,95 +1,103 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 
+/**
+ * Site-wide cinematic curtain.
+ * - First visit per session: covered before first paint by the html[data-intro]
+ *   script in app/layout.tsx, lifts after ~0.9s.
+ * - Internal link clicks: curtain rises from the bottom while Next navigates in parallel,
+ *   then lifts off the top once the new route has rendered.
+ */
+
+type Phase = "hidden" | "cover" | "reveal";
+
+const COVER_MS = 520;
+const REVEAL_MS = 700;
+const HOLD_MS = 120;
+const INTRO_MS = 900;
+const STUCK_MS = 2500; // navigation cancelled, prevented, or redirected to same path
+
 export function Preloader() {
-  const [visible, setVisible] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const pathname = usePathname();
+  const [phase, setPhase] = useState<Phase>("hidden");
+  const phaseRef = useRef<Phase>("hidden");
+  const coverStart = useRef(0);
+  const timers = useRef<number[]>([]);
 
+  const go = (p: Phase) => {
+    phaseRef.current = p;
+    setPhase(p);
+  };
+  const later = (fn: () => void, ms: number) => {
+    timers.current.push(window.setTimeout(fn, ms));
+  };
+  const clearTimers = () => {
+    timers.current.forEach(clearTimeout);
+    timers.current = [];
+  };
+
+  // Intro + link interception
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    // Only show on first visit per session
-    const seen = sessionStorage.getItem("__preloader_shown");
-    if (seen) return;
-    sessionStorage.setItem("__preloader_shown", "1");
-    setVisible(true);
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const html = document.documentElement;
 
-    // Animate progress ring 0→100 over ~1.4s
-    const start = performance.now();
-    const duration = 1400;
-    const tick = (now: number) => {
-      const pct = Math.min(((now - start) / duration) * 100, 100);
-      setProgress(pct);
-      if (pct < 100) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-
-    // Dismiss after 1.6s or when window.load fires (whichever is later)
-    const dismiss = () => setTimeout(() => setVisible(false), 200);
-    if (document.readyState === "complete") {
-      setTimeout(dismiss, 300);
-    } else {
-      window.addEventListener("load", dismiss, { once: true });
+    if (html.dataset.intro) {
+      go("cover");
+      requestAnimationFrame(() => delete html.dataset.intro);
+      later(() => go("reveal"), reduced ? 0 : INTRO_MS);
     }
+
+    if (reduced) return clearTimers;
+
+    const onClick = (e: MouseEvent) => {
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const a = (e.target as Element | null)?.closest?.("a");
+      if (!a || !a.href || a.target === "_blank" || a.hasAttribute("download")) return;
+      const url = new URL(a.href, location.href);
+      if (url.origin !== location.origin || url.pathname === location.pathname) return;
+      if (url.pathname.startsWith("/api/")) return;
+
+      clearTimers();
+      coverStart.current = performance.now();
+      go("cover");
+      later(() => phaseRef.current === "cover" && go("reveal"), STUCK_MS);
+    };
+
+    // Capture phase: runs before Next <Link> calls preventDefault.
+    document.addEventListener("click", onClick, true);
+    return () => {
+      document.removeEventListener("click", onClick, true);
+      clearTimers();
+    };
   }, []);
 
-  // Circumference of r=44 circle
-  const C = 2 * Math.PI * 44;
+  // New route rendered → lift curtain once the cover has fully landed
+  useEffect(() => {
+    if (phaseRef.current !== "cover" || coverStart.current === 0) return;
+    const wait = Math.max(0, coverStart.current + COVER_MS - performance.now()) + HOLD_MS;
+    clearTimers();
+    later(() => go("reveal"), wait);
+  }, [pathname]);
+
+  // Reset below the viewport after lifting, without animating back down
+  useEffect(() => {
+    if (phase !== "reveal") return;
+    const t = window.setTimeout(() => {
+      coverStart.current = 0;
+      go("hidden");
+    }, REVEAL_MS);
+    return () => clearTimeout(t);
+  }, [phase]);
 
   return (
-    <AnimatePresence>
-      {visible && (
-        <motion.div
-          key="preloader"
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="liquid-glass-intense fixed inset-0 z-[9999] flex flex-col items-center justify-center gap-6"
-          style={{ backdropFilter: "blur(40px)", background: "var(--bg-base)" }}
-        >
-          {/* Progress ring */}
-          <div className="relative">
-            <svg width="112" height="112" className="-rotate-90">
-              <circle cx="56" cy="56" r="44" fill="none" stroke="var(--color-border)" strokeWidth="3" />
-              <motion.circle
-                cx="56" cy="56" r="44" fill="none"
-                stroke="url(#preloader-grad)"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeDasharray={C}
-                strokeDashoffset={C - (progress / 100) * C}
-                style={{ transition: "stroke-dashoffset 0.05s linear" }}
-              />
-              <defs>
-                <linearGradient id="preloader-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="var(--accent-primary)" />
-                  <stop offset="100%" stopColor="var(--accent-purple)" />
-                </linearGradient>
-              </defs>
-            </svg>
-
-            {/* Logo inside ring */}
-            <motion.div
-              animate={{ scale: [1, 1.04, 1] }}
-              transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute inset-0 flex items-center justify-center"
-            >
-              <Image src="/logo.png" alt="TamalData" width={52} height={52} className="rounded-xl" priority />
-            </motion.div>
-          </div>
-
-          {/* Brand name shimmer */}
-          <motion.p
-            animate={{ opacity: [0.6, 1, 0.6] }}
-            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-            className="text-gradient font-heading text-xl tracking-tight"
-          >
-            TamalData
-          </motion.p>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <div className="page-curtain" data-phase={phase} aria-hidden="true">
+      <div className="page-curtain-edge" />
+      <div className="page-curtain-mark">
+        <Image src="/logo.png" alt="" width={240} height={160} className="h-28 w-auto" priority />
+      </div>
+    </div>
   );
 }

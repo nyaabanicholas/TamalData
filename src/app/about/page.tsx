@@ -1,87 +1,72 @@
 import type { Metadata } from "next";
 import { FaqAccordion } from "@/components/landing/FaqAccordion";
 import { ShieldCheck, Zap, Award } from "lucide-react";
+import { SUPPORT_EMAIL, SUPPORT_WHATSAPP_URL } from "@/lib/contact";
 
 export const metadata: Metadata = {
   title: "About",
-  description: "Learn about TamalData — Ghana's cheapest data bundle marketplace.",
+  description: "Learn about TamalData, Ghana's cheapest data bundle marketplace.",
 };
 
 export default function AboutPage() {
   return (
     <>
-      <main className="cinematic min-h-screen">
+      <main className="min-h-screen">
         {/* Hero */}
-        <section className="section-padding text-center pt-32">
-          <div className="container-content max-w-3xl mx-auto px-4">
-            <div className="font-heading text-text-primary text-4xl tracking-[-1px] mb-6">
-              TamalData
-            </div>
-            <h1 className="font-heading text-text-primary text-5xl lg:text-6xl tracking-[-3px] leading-[0.85] mb-6">
-              Ghana&apos;s Cheapest Data Bundles
+        <section className="pt-36 pb-16 md:pb-20 text-center">
+          <div className="mx-auto max-w-3xl px-4">
+            <h1 className="font-heading text-text-primary text-5xl lg:text-6xl tracking-tight leading-[1.02] mb-6">
+              Ghana&apos;s cheapest data bundles
             </h1>
-            <p className="text-text-secondary text-lg leading-relaxed font-barlow font-light">
-              TamalData is a premium data bundle marketplace built for Ghanaians.
-              We work with wholesale network partners and pass
-              the savings directly to you — with fast delivery, zero hidden charges, and
-              a seamless experience unlike anything else in the market.
+            <p className="mx-auto max-w-[60ch] text-text-secondary text-lg leading-relaxed font-barlow text-pretty">
+              We buy MTN, Telecel and AirtelTigo data from wholesale partners and pass the
+              savings straight to you. Pay with Mobile Money, no account needed, and your
+              bundle usually lands within minutes.
             </p>
           </div>
         </section>
 
-        {/* Trust badges */}
-        <section className="pb-section-mobile lg:pb-section-desktop">
-          <div className="container-content px-4">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
-              <div className="liquid-glass rounded-[1.25rem] p-6 text-center group">
-                <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-accent-primary/15 flex items-center justify-center group-hover:bg-accent-primary/25 transition-colors">
-                  <ShieldCheck className="h-6 w-6 text-accent-primary" strokeWidth={1.5} />
-                </div>
-                <p className="font-heading text-text-primary text-2xl mb-1">Trusted by Thousands</p>
-                <p className="text-xs text-text-secondary font-barlow font-light">30,000+ orders fulfilled across Ghana</p>
+        {/* Proof points */}
+        <section className="pb-20 md:pb-28">
+          <div className="mx-auto grid max-w-4xl grid-cols-1 gap-4 px-4 sm:grid-cols-3">
+            {[
+              { icon: Award, value: "30,000+", label: "Orders delivered across Ghana" },
+              { icon: Zap, value: "10-30 min", label: "Typical delivery time" },
+              { icon: ShieldCheck, value: "MoMo", label: "Secure checkout via Paystack" },
+            ].map((p) => (
+              <div key={p.label} className="liquid-glass rounded-[1.25rem] p-6">
+                <p.icon className="h-5 w-5 text-accent-primary" strokeWidth={1.5} />
+                <p className="mt-6 font-display text-3xl font-semibold tracking-tight tabular-nums text-text-primary">{p.value}</p>
+                <p className="mt-1 text-sm text-text-secondary">{p.label}</p>
               </div>
-              <div className="liquid-glass rounded-[1.25rem] p-6 text-center">
-                <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-accent-orange/15 flex items-center justify-center group-hover:bg-accent-orange/25 transition-colors">
-                  <Zap className="h-6 w-6 text-accent-orange" strokeWidth={1.5} />
-                </div>
-                <p className="font-heading text-text-primary text-2xl mb-1">Fast Delivery</p>
-                <p className="text-xs text-text-secondary font-barlow font-light">Typically delivered within 10–30 minutes</p>
-              </div>
-              <div className="liquid-glass rounded-[1.25rem] p-6 text-center group">
-                <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-accent-primary/10 flex items-center justify-center group-hover:bg-accent-primary/20 transition-colors">
-                  <Award className="h-6 w-6 text-accent-primary" strokeWidth={1.5} />
-                </div>
-                <p className="font-heading text-text-primary text-2xl mb-1">30,000+ Orders</p>
-                <p className="text-xs text-text-secondary font-barlow font-light">And counting. Trusted by Ghanaians.</p>
-              </div>
-            </div>
+            ))}
           </div>
         </section>
 
         {/* Contact */}
-        <section className="section-padding border-t border-color-border">
-          <div className="container-content max-w-2xl mx-auto text-center px-4">
-            <h2 className="font-heading text-text-primary text-4xl tracking-[-1px] mb-4">
-              Get in Touch
-            </h2>
-            <p className="text-text-secondary mb-6 font-barlow font-light">
-              Need help? Our support team is available on WhatsApp.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center text-sm">
-              <a
-                href="https://wa.me/233000000000"
-                className="liquid-glass px-5 py-3 rounded-full text-text-primary hover:text-accent-primary transition-all font-barlow"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                WhatsApp Support
-              </a>
-              <a
-                href="mailto:hello@tamaldata.com"
-                className="liquid-glass px-5 py-3 rounded-full text-text-primary hover:text-accent-primary transition-all font-barlow"
-              >
-                Email Us
-              </a>
+        <section className="pb-24">
+          <div className="mx-auto max-w-4xl px-4">
+            <div className="liquid-glass flex flex-col items-start justify-between gap-6 rounded-[1.5rem] p-8 md:flex-row md:items-center md:p-10">
+              <div>
+                <h2 className="font-heading text-text-primary text-3xl tracking-tight">Need a hand?</h2>
+                <p className="mt-2 text-text-secondary font-barlow">Our team answers on WhatsApp and email, every day.</p>
+              </div>
+              <div className="flex flex-wrap gap-3 text-sm">
+                <a
+                  href={SUPPORT_WHATSAPP_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-full bg-accent-primary px-5 py-2.5 font-semibold text-white transition-transform duration-200 active:scale-[0.98]"
+                >
+                  WhatsApp us
+                </a>
+                <a
+                  href={`mailto:${SUPPORT_EMAIL}`}
+                  className="rounded-full px-5 py-2.5 font-medium text-text-secondary ring-1 ring-inset ring-color-border transition-colors hover:text-text-primary"
+                >
+                  {SUPPORT_EMAIL}
+                </a>
+              </div>
             </div>
           </div>
         </section>

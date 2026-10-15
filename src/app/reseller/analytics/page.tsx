@@ -130,7 +130,7 @@ export default function AnalyticsPage() {
     return (
       <div className="container-content pt-4 pb-10">
         <GlassPanel className="p-6 text-center max-w-md mx-auto">
-          <p className="text-color-warning mb-4">⚠️ {error}</p>
+          <p className="text-color-warning mb-4">{error}</p>
           <button
             onClick={() => window.location.reload()}
             className="px-4 py-2 rounded-btn border border-color-border text-text-secondary text-sm hover:bg-bg-elevated transition-colors"
@@ -146,7 +146,7 @@ export default function AnalyticsPage() {
     <div className="container-content pt-4 pb-10">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="font-display font-extrabold text-3xl text-text-primary">Analytics</h1>
+          <h1 className="font-heading text-3xl md:text-4xl tracking-tight text-text-primary">Analytics</h1>
           <p className="text-text-secondary text-sm mt-1">
             Track your sales performance and business growth
           </p>
@@ -167,7 +167,7 @@ export default function AnalyticsPage() {
           { label: "Avg. Order", value: formatGHS(summary.avgOrderValue), color: "var(--color-warning)" },
         ].map((s) => (
           <GlassPanel key={s.label} className="p-4">
-            <p className="text-xs text-text-muted uppercase tracking-widest mb-1">{s.label}</p>
+            <p className="text-sm text-text-muted mb-1">{s.label}</p>
             <p className="font-display font-bold text-xl" style={{ color: s.color }}>{s.value}</p>
           </GlassPanel>
         ))}
@@ -375,7 +375,7 @@ export default function AnalyticsPage() {
           const revenue = data?.revenue ?? 0;
           return (
             <GlassPanel key={network} className="p-4 text-center">
-              <p className="text-xs text-text-muted uppercase tracking-wider mb-1">{network}</p>
+              <p className="text-sm text-text-muted mb-1">{network}</p>
               <p className="font-display font-bold text-xl" style={{ color: NETWORK_COLORS[network] }}>
                 {orders}
               </p>

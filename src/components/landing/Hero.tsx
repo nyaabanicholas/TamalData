@@ -9,6 +9,7 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
 const HERO_VIDEO = "/videos/hero.mp4";
+const HERO_POSTER = "/videos/hero-poster.jpg";
 
 const enter = {
   initial: { opacity: 0, y: 20 },
@@ -28,9 +29,7 @@ export function Hero() {
 
   return (
     <section
-      className={`relative min-h-[100dvh] flex flex-col overflow-hidden ${
-        isDark ? "cinematic video-readable" : ""
-      }`}
+      className="relative min-h-[100dvh] flex flex-col overflow-hidden"
       style={{ touchAction: "pan-y" }}
     >
       {/* Light-mode: animated radial glow behind the orb — stronger so the orb reads clearly */}
@@ -55,7 +54,8 @@ export function Hero() {
           muted
           loop
           playsInline
-          preload="none"
+          preload="metadata"
+          poster={HERO_POSTER}
           aria-hidden="true"
           className="absolute inset-0 w-full h-full object-cover object-top z-[1]"
           style={{
@@ -67,10 +67,13 @@ export function Hero() {
           <source src={HERO_VIDEO} type="video/mp4" />
         </video>
       ) : (
-        <FadingVideo
-          src={HERO_VIDEO}
-          className="absolute inset-0 w-full h-full object-cover object-top z-0"
-        />
+        <div className="absolute inset-0 z-0 cinematic video-readable hero-media-mask">
+          <FadingVideo
+            src={HERO_VIDEO}
+            poster={HERO_POSTER}
+            className="absolute inset-0 w-full h-full object-cover object-top"
+          />
+        </div>
       )}
 
       {/* Light-mode ambient gradient — lighter touch so the orb isn't washed out */}
@@ -247,15 +250,13 @@ export function Hero() {
         </div>
       </motion.div>
 
-      {/* Fade transition overlay */}
-      <div
-        className="absolute bottom-0 left-0 right-0 h-48 md:h-72 pointer-events-none z-[5]"
-        style={{
-          background: isDark
-            ? "linear-gradient(to top, rgba(var(--section-fade-rgb), 0.98) 0%, rgba(var(--section-fade-rgb), 0.55) 38%, rgba(var(--section-fade-rgb), 0) 100%)"
-            : "linear-gradient(to top, rgba(244,246,255, 0.95) 0%, rgba(244,246,255, 0.50) 40%, transparent 100%)",
-        }}
-      />
+      {/* Light-mode fade into the page (dark mode uses .hero-media-mask) */}
+      {!isDark && (
+        <div
+          className="absolute bottom-0 left-0 right-0 h-48 md:h-72 pointer-events-none z-[5]"
+          style={{ background: "linear-gradient(to top, rgba(244,246,255, 0.95) 0%, rgba(244,246,255, 0.50) 40%, transparent 100%)" }}
+        />
+      )}
     </section>
   );
 }

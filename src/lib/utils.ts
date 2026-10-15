@@ -5,8 +5,10 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+const GHS = new Intl.NumberFormat("en-GH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
 export function formatGHS(amount: number): string {
-  return `GH₵${amount.toFixed(2)}`;
+  return `GH₵${GHS.format(amount)}`;
 }
 
 export function maskPhone(phone: string): string {

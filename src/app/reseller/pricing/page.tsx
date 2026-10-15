@@ -35,7 +35,7 @@ export default function ResellerPricingPage() {
     <div className="container-content pt-4 pb-10">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="font-display font-extrabold text-3xl text-text-primary">Pricing</h1>
+          <h1 className="font-heading text-3xl md:text-4xl tracking-tight text-text-primary">Pricing</h1>
           <p className="text-text-secondary mt-1">Your cost vs. retail price. Pocket the difference.</p>
         </div>
         <div className="flex gap-2">
@@ -78,7 +78,7 @@ export default function ResellerPricingPage() {
             <p className="text-xs text-text-muted mb-1">Your Profit</p>
             {customSell > resCost ? (
               <>
-                <p className="font-display font-bold text-2xl text-color-success">+GH₵{(customSell - resCost).toFixed(2)}</p>
+                <p className="font-display font-semibold text-2xl tracking-tight tabular-nums text-color-success">+GH₵{(customSell - resCost).toFixed(2)}</p>
                 <p className="text-xs text-text-muted mt-1">Margin: {margin}%</p>
               </>
             ) : (

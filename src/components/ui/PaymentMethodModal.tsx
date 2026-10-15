@@ -219,7 +219,7 @@ export function PaymentMethodModal({
                   onClick={handlePay}
                   disabled={!method}
                   className="w-full mt-5 flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-50"
-                  style={{ background: "var(--gradient-cta)" }}
+                  style={{ background: "var(--cta-fill)" }}
                 >
                   {method === "WALLET" ? "Pay with Wallet" : method === "MOMO" ? "Pay with Mobile Money" : "Select a method"}
                   <ArrowUpRight className="h-4 w-4" />
@@ -253,7 +253,7 @@ export function PaymentMethodModal({
                 <button
                   onClick={() => { onSuccess(orderRef ?? ""); onClose(); }}
                   className="mt-2 rounded-xl px-6 py-2.5 text-sm font-semibold text-white"
-                  style={{ background: "var(--gradient-cta)" }}
+                  style={{ background: "var(--cta-fill)" }}
                 >
                   Done
                 </button>

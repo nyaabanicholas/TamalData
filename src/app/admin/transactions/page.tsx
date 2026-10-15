@@ -60,24 +60,24 @@ export default async function AdminTransactionsPage({
 
   return (
     <div className="container-content py-10">
-      <h1 className="font-display font-extrabold text-3xl text-text-primary mb-8">Wallet Transactions</h1>
+      <h1 className="font-heading text-3xl md:text-4xl tracking-tight text-text-primary mb-8">Wallet Transactions</h1>
 
       {/* Summary cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <GlassPanel className="p-4">
-          <p className="text-xs text-text-muted uppercase tracking-widest mb-1">Total Credits</p>
+          <p className="text-sm text-text-muted mb-1">Total Credits</p>
           <p className="font-display font-bold text-lg text-color-success">{formatGHS(Number(totalCredits))}</p>
         </GlassPanel>
         <GlassPanel className="p-4">
-          <p className="text-xs text-text-muted uppercase tracking-widest mb-1">Total Debits</p>
+          <p className="text-sm text-text-muted mb-1">Total Debits</p>
           <p className="font-display font-bold text-lg text-color-error">{formatGHS(Number(totalDebits))}</p>
         </GlassPanel>
         <GlassPanel className="p-4">
-          <p className="text-xs text-text-muted uppercase tracking-widest mb-1">Total Commissions</p>
+          <p className="text-sm text-text-muted mb-1">Total Commissions</p>
           <p className="font-display font-bold text-lg text-accent-primary">{formatGHS(Number(totalCommissions))}</p>
         </GlassPanel>
         <GlassPanel className="p-4">
-          <p className="text-xs text-text-muted uppercase tracking-widest mb-1">Total Payouts</p>
+          <p className="text-sm text-text-muted mb-1">Total Payouts</p>
           <p className="font-display font-bold text-lg text-accent-orange">{formatGHS(Number(totalPayouts))}</p>
         </GlassPanel>
       </div>

@@ -24,13 +24,13 @@ export const GlowButton = forwardRef<HTMLButtonElement, GlowButtonProps>(
     ref
   ) => {
     const base =
-      "relative inline-flex items-center justify-center font-semibold rounded-btn transition-all duration-200 select-none focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg-base disabled:opacity-50 disabled:cursor-not-allowed";
+      "relative inline-flex items-center justify-center font-semibold rounded-full transition-[transform,box-shadow,background-color,border-color,color] duration-200 select-none focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg-base disabled:opacity-50 disabled:cursor-not-allowed";
 
     const variants = {
       primary:
-        "bg-gradient-to-r from-[#009DF9] to-[#FE8E01] text-white shadow-lg shadow-[#009DF9]/20 active:scale-[0.98]",
+        "bg-cta-gradient text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.28),0_10px_28px_-10px_rgba(0,157,249,0.65)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.28),0_14px_34px_-10px_rgba(0,157,249,0.8)] active:scale-[0.98]",
       ghost:
-        "border border-white/20 text-white/80 bg-transparent hover:border-white/50 hover:text-white active:scale-[0.98]",
+        "border border-color-border text-text-secondary bg-transparent hover:border-accent-primary/40 hover:text-text-primary active:scale-[0.98]",
       secondary:
         "bg-bg-elevated/50 text-text-primary border border-color-border/50 hover:border-accent-primary/30 active:scale-[0.98]",
     };

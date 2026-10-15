@@ -44,24 +44,24 @@ export default async function ApiHealthPage() {
 
   return (
     <div className="container-content py-10">
-      <h1 className="font-display font-extrabold text-3xl text-text-primary mb-8">API Health</h1>
+      <h1 className="font-heading text-3xl md:text-4xl tracking-tight text-text-primary mb-8">API Health</h1>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <GlassPanel className="p-4">
-          <p className="text-xs text-text-muted uppercase tracking-widest mb-1">DataMart Status</p>
+          <p className="text-sm text-text-muted mb-1">DataMart Status</p>
           <p className="font-display font-bold text-xl" style={{ color: health.ok ? "#10b981" : "#ef4444" }}>
             {health.ok ? "Online" : "Offline"}
           </p>
         </GlassPanel>
         <GlassPanel className="p-4">
-          <p className="text-xs text-text-muted uppercase tracking-widest mb-1">DataMart Balance</p>
-          <p className="font-display font-bold text-xl text-accent-primary">
+          <p className="text-sm text-text-muted mb-1">DataMart Balance</p>
+          <p className="font-display font-semibold text-xl tracking-tight tabular-nums text-text-primary">
             {health.ok ? formatGHS(health.balance) : "—"}
           </p>
         </GlassPanel>
         {networkStatuses.map((n) => (
           <GlassPanel key={n.name} className="p-4">
-            <p className="text-xs text-text-muted uppercase tracking-widest mb-1">{n.name}</p>
+            <p className="text-sm text-text-muted mb-1">{n.name}</p>
             <p className="font-display font-bold text-lg" style={{ color: STATUS_COLOR[n.status] ?? "#888" }}>
               {n.status}
             </p>

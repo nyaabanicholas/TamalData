@@ -19,40 +19,51 @@ export default async function ReferralsPage() {
 
   const settings = await prisma.siteSettings.findUnique({ where: { id: "singleton" } });
   const commission = Number(settings?.referralCommission ?? 0.02) * 100;
-  const referralUrl = `${process.env.NEXT_PUBLIC_APP_URL}/auth/register?ref=${user?.referralCode}`;
+  const referralUrl = user?.referralCode
+    ? `${process.env.NEXT_PUBLIC_APP_URL}/auth/register?ref=${user.referralCode}`
+    : null;
 
   return (
-    <div className="container-content pt-28 pb-10 max-w-3xl">
-      <h1 className="font-display font-extrabold text-3xl text-text-primary mb-2">Referral Program</h1>
+    <div className="container-content pt-28 pb-12">
+      <h1 className="font-heading text-3xl md:text-4xl tracking-tight text-text-primary mb-2">Referral Program</h1>
       <p className="text-text-secondary mb-8">
         Earn <span className="text-accent-primary font-semibold">{commission}%</span> commission on every order placed by people you refer.
       </p>
 
       {/* Referral link */}
       <GlassPanel className="p-6 mb-6">
-        <h2 className="font-display font-semibold text-text-primary mb-3">Your Referral Link</h2>
-        <div className="flex items-center gap-3">
-          <input
-            readOnly
-            value={referralUrl}
-            className="flex-1 bg-bg-elevated border border-color-border rounded-input px-4 py-3 font-mono text-sm text-text-primary focus:outline-none"
-          />
-          <CopyButton text={referralUrl} />
-        </div>
-        <p className="text-xs text-text-muted mt-3">
-          Your code: <span className="font-mono text-accent-primary font-bold">{user?.referralCode}</span>
-        </p>
+        <h2 className="font-display font-semibold text-text-primary mb-3">Your referral link</h2>
+        {referralUrl ? (
+          <>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <input
+                readOnly
+                value={referralUrl}
+                aria-label="Your referral link"
+                className="min-w-0 flex-1 bg-bg-elevated border border-color-border rounded-input px-4 py-3 font-mono text-sm text-text-primary focus:outline-none"
+              />
+              <CopyButton text={referralUrl} />
+            </div>
+            <p className="text-xs text-text-muted mt-3">
+              Your code: <span className="font-mono text-accent-primary font-bold">{user?.referralCode}</span>
+            </p>
+          </>
+        ) : (
+          <p className="text-sm text-text-secondary">
+            Your referral code is not set up yet. Contact support and we will activate it.
+          </p>
+        )}
       </GlassPanel>
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4 mb-6">
         <GlassPanel className="p-4">
-          <p className="text-xs text-text-muted uppercase tracking-widest mb-1">Total Referrals</p>
-          <p className="font-display font-bold text-2xl text-accent-primary">{user?.referrals.length ?? 0}</p>
+          <p className="text-sm text-text-muted mb-1">Total referrals</p>
+          <p className="font-display font-semibold text-3xl tabular-nums text-text-primary">{user?.referrals.length ?? 0}</p>
         </GlassPanel>
         <GlassPanel className="p-4">
-          <p className="text-xs text-text-muted uppercase tracking-widest mb-1">Your Commission Rate</p>
-          <p className="font-display font-bold text-2xl text-color-success">{commission}%</p>
+          <p className="text-sm text-text-muted mb-1">Your commission rate</p>
+          <p className="font-display font-semibold text-3xl tabular-nums text-color-success">{commission}%</p>
         </GlassPanel>
       </div>
 

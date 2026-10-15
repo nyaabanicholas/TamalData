@@ -50,7 +50,7 @@ export default async function ResellerOrdersPage({
 
   return (
     <div className="container-content pt-4 pb-10">
-      <h1 className="font-display font-extrabold text-3xl text-text-primary mb-8">Reseller Orders</h1>
+      <h1 className="font-heading text-3xl md:text-4xl tracking-tight text-text-primary mb-8">Reseller Orders</h1>
 
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
@@ -61,7 +61,7 @@ export default async function ResellerOrdersPage({
           { label: "Net Profit",      value: formatGHS(totalProfit),   color: "var(--color-success)" },
         ].map((s) => (
           <GlassPanel key={s.label} className="p-4">
-            <p className="text-xs text-text-muted uppercase tracking-widest mb-1">{s.label}</p>
+            <p className="text-sm text-text-muted mb-1">{s.label}</p>
             <p className="font-display font-bold text-xl" style={{ color: s.color }}>{s.value}</p>
           </GlassPanel>
         ))}

@@ -295,7 +295,7 @@ export function DashboardQuickBuy({ userId }: DashboardQuickBuyProps) {
           open={paymentModalOpen}
           onClose={() => setPaymentModalOpen(false)}
           amount={selectedBundle.price}
-          description={`${selectedBundle.size} — ${network}`}
+          description={`${selectedBundle.size} · ${network}`}
           phone={phone}
           network={network}
           bundleId={selectedBundle.id}

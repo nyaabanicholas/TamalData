@@ -16,7 +16,7 @@ export function NetworkTeaser({ statuses, cheapestPrices }: NetworkTeaserProps) 
   const networks: Network[] = ["MTN", "TELECEL", "AIRTELTIGO"];
 
   return (
-    <section className="cinematic section-padding relative overflow-hidden">
+    <section className="section-padding relative overflow-hidden">
 
       <div className="container-content relative z-10">
         <motion.div

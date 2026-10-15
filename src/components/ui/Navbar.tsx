@@ -24,6 +24,13 @@ const NAV_LINKS = [
 /** Dashboard-like pages that get the compact top bar + sidebar instead of the full horizontal nav */
 const DASHBOARD_PATHS = ["/dashboard", "/admin", "/reseller"];
 
+/** Longest matching link wins, so /buy/bulk highlights "Bulk Buy" only, not "Buy Data" too. */
+function getActiveHref(pathname: string): string | undefined {
+  return NAV_LINKS.map((l) => l.href)
+    .filter((h) => (h === "/" ? pathname === "/" : pathname === h || pathname.startsWith(h + "/")))
+    .sort((x, y) => y.length - x.length)[0];
+}
+
 function isDashboardPage(pathname: string): boolean {
   return DASHBOARD_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"));
 }
@@ -38,6 +45,7 @@ export function Navbar() {
   const authed = !!isSignedIn;
   const [isAdmin, setIsAdmin] = useState(false);
   const compact = isDashboardPage(pathname);
+  const activeHref = getActiveHref(pathname);
 
   useEffect(() => {
     if (isSignedIn) {
@@ -78,7 +86,7 @@ export function Navbar() {
           {/* Desktop nav — perfectly centered on screen, independent of side elements */}
           <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-1 rounded-full px-2 py-1.5 liquid-glass-strong ring-1 ring-color-border/50">
             {NAV_LINKS.map((l) => {
-              const active = l.href === "/" ? pathname === "/" : (pathname === l.href || pathname.startsWith(l.href + "/"));
+              const active = l.href === activeHref;
               return (
                 <Link
                   key={l.href}

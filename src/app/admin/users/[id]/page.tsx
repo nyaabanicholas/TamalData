@@ -68,7 +68,7 @@ export default async function AdminUserDetailPage({
       {/* User info header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="font-display font-extrabold text-3xl text-text-primary mb-1">{user.name}</h1>
+          <h1 className="font-heading text-3xl md:text-4xl tracking-tight text-text-primary mb-1">{user.name}</h1>
           <div className="flex items-center gap-3 text-sm text-text-secondary">
             <span className="font-mono">{user.phone}</span>
             {user.email && <span>· {user.email}</span>}
@@ -98,24 +98,24 @@ export default async function AdminUserDetailPage({
       {/* KPI row */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
         <GlassPanel className="p-4">
-          <p className="text-xs text-text-muted uppercase tracking-wider mb-1">Wallet Balance</p>
-          <p className="font-display font-bold text-xl text-accent-primary">{formatGHS(Number(user.walletBalance))}</p>
+          <p className="text-sm text-text-muted mb-1">Wallet Balance</p>
+          <p className="font-display font-semibold text-xl tracking-tight tabular-nums text-text-primary">{formatGHS(Number(user.walletBalance))}</p>
         </GlassPanel>
         <GlassPanel className="p-4">
-          <p className="text-xs text-text-muted uppercase tracking-wider mb-1">Total Spent</p>
-          <p className="font-display font-bold text-xl text-color-error">{formatGHS(totalSpent)}</p>
+          <p className="text-sm text-text-muted mb-1">Total Spent</p>
+          <p className="font-display font-semibold text-xl tracking-tight tabular-nums text-color-error">{formatGHS(totalSpent)}</p>
         </GlassPanel>
         <GlassPanel className="p-4">
-          <p className="text-xs text-text-muted uppercase tracking-wider mb-1">Total Credited</p>
-          <p className="font-display font-bold text-xl text-color-success">{formatGHS(totalCredited)}</p>
+          <p className="text-sm text-text-muted mb-1">Total Credited</p>
+          <p className="font-display font-semibold text-xl tracking-tight tabular-nums text-color-success">{formatGHS(totalCredited)}</p>
         </GlassPanel>
         <GlassPanel className="p-4">
-          <p className="text-xs text-text-muted uppercase tracking-wider mb-1">Orders</p>
-          <p className="font-display font-bold text-xl text-text-primary">{user._count.orders}</p>
+          <p className="text-sm text-text-muted mb-1">Orders</p>
+          <p className="font-display font-semibold text-xl tracking-tight tabular-nums text-text-primary">{user._count.orders}</p>
         </GlassPanel>
         <GlassPanel className="p-4">
-          <p className="text-xs text-text-muted uppercase tracking-wider mb-1">Referrals</p>
-          <p className="font-display font-bold text-xl text-text-primary">{user._count.referrals}</p>
+          <p className="text-sm text-text-muted mb-1">Referrals</p>
+          <p className="font-display font-semibold text-xl tracking-tight tabular-nums text-text-primary">{user._count.referrals}</p>
         </GlassPanel>
       </div>
 

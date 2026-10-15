@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { LiveDot } from "@/components/ui/LiveDot";
-import { Footer } from "@/components/landing/Footer";
 import type { NetworkStatus } from "@/types";
 
 export const metadata: Metadata = { title: "Network Status" };
@@ -58,7 +57,6 @@ export default async function StatusPage() {
           </div>
         </div>
       </main>
-      <Footer />
     </>
   );
 }

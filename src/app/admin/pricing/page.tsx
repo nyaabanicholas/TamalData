@@ -51,13 +51,8 @@ export default async function AdminPricingPage() {
 
   return (
     <div className="container-content py-10 max-w-4xl">
-      <div className="flex items-center gap-4 mb-2">
-        <a href="/admin" className="text-text-muted hover:text-text-primary text-sm transition-colors">
-          ← Dashboard
-        </a>
-        <h1 className="font-display font-extrabold text-3xl text-text-primary">Pricing</h1>
-      </div>
-      <p className="text-text-secondary mb-8 ml-[calc(3rem)]">
+      <h1 className="font-heading text-3xl md:text-4xl tracking-tight text-text-primary mb-2">Pricing</h1>
+      <p className="text-text-secondary mb-8">
         Set sell prices for each bundle. Changes apply to all future orders.
       </p>
       <PricingEditor

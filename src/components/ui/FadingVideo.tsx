@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 
 const FADE_MS = 500;
 const FADE_OUT_LEAD = 0.55; // seconds before end to start fading out
+const LOOP_FLOOR = 0.35; // dip opacity at loop seam instead of cutting to black
 
 type Props = {
   src: string;
@@ -13,80 +14,70 @@ type Props = {
 };
 
 /**
- * Background video with JS-driven (rAF) crossfade looping.
- * No CSS transitions — each fade resumes from the current opacity so
- * rapid loops never hard-cut. Manual loop via the `ended` event.
+ * Background video with rAF crossfade at the loop seam.
+ * Poster shows immediately (no black flash); playback pauses while offscreen
+ * so off-viewport videos stop eating GPU/decoder time.
  */
 export function FadingVideo({ src, className, style, poster }: Props) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const rafRef = useRef<number | null>(null);
-  const fadingOutRef = useRef(false);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    const prefersReduced =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    // Reduced motion: show a static first frame, no fade loop.
-    if (prefersReduced) {
-      video.style.opacity = "1";
-      video.removeAttribute("autoplay");
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      video.pause();
       return;
     }
 
-    const fadeTo = (target: number, duration: number) => {
-      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
-      const start = parseFloat(video.style.opacity || "0");
-      const delta = target - start;
-      let startTs: number | null = null;
+    let raf: number | null = null;
+    let fadingOut = false;
+    let visible = false;
 
+    const fadeTo = (target: number) => {
+      if (raf !== null) cancelAnimationFrame(raf);
+      const start = parseFloat(video.style.opacity || "1");
+      let t0: number | null = null;
       const step = (ts: number) => {
-        if (startTs === null) startTs = ts;
-        const progress = Math.min((ts - startTs) / duration, 1);
-        video.style.opacity = String(start + delta * progress);
-        if (progress < 1) {
-          rafRef.current = requestAnimationFrame(step);
-        } else {
-          rafRef.current = null;
-        }
+        t0 ??= ts;
+        const p = Math.min((ts - t0) / FADE_MS, 1);
+        video.style.opacity = String(start + (target - start) * p);
+        raf = p < 1 ? requestAnimationFrame(step) : null;
       };
-      rafRef.current = requestAnimationFrame(step);
-    };
-
-    const onLoadedData = () => {
-      video.style.opacity = "0";
-      video.play().catch(() => {});
-      fadeTo(1, FADE_MS);
+      raf = requestAnimationFrame(step);
     };
 
     const onTimeUpdate = () => {
       const remaining = video.duration - video.currentTime;
-      if (!fadingOutRef.current && remaining <= FADE_OUT_LEAD && remaining > 0) {
-        fadingOutRef.current = true;
-        fadeTo(0, FADE_MS);
+      if (!fadingOut && remaining <= FADE_OUT_LEAD && remaining > 0) {
+        fadingOut = true;
+        fadeTo(LOOP_FLOOR);
       }
     };
 
     const onEnded = () => {
-      video.style.opacity = "0";
-      setTimeout(() => {
-        video.currentTime = 0;
-        video.play().catch(() => {});
-        fadingOutRef.current = false;
-        fadeTo(1, FADE_MS);
-      }, 100);
+      video.currentTime = 0;
+      if (visible) video.play().catch(() => {});
+      fadingOut = false;
+      fadeTo(1);
     };
 
-    video.addEventListener("loadeddata", onLoadedData);
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        if (visible) video.play().catch(() => {});
+        else video.pause();
+      },
+      { rootMargin: "200px" }
+    );
+    io.observe(video);
+
     video.addEventListener("timeupdate", onTimeUpdate);
     video.addEventListener("ended", onEnded);
 
     return () => {
-      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
-      video.removeEventListener("loadeddata", onLoadedData);
+      io.disconnect();
+      if (raf !== null) cancelAnimationFrame(raf);
       video.removeEventListener("timeupdate", onTimeUpdate);
       video.removeEventListener("ended", onEnded);
     };
@@ -97,19 +88,12 @@ export function FadingVideo({ src, className, style, poster }: Props) {
       ref={videoRef}
       src={src}
       poster={poster}
-      autoPlay
       muted
       playsInline
-      preload="none"
+      preload="metadata"
       aria-hidden="true"
       className={className}
-      style={{
-        opacity: 0,
-        willChange: "opacity",
-        transform: "translateZ(0)",
-        backfaceVisibility: "hidden",
-        ...style,
-      }}
+      style={{ willChange: "opacity", ...style }}
     />
   );
 }

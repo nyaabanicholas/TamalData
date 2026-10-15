@@ -48,7 +48,7 @@ export default async function AdminUsersPage({
 
   return (
     <div className="container-content py-10">
-      <h1 className="font-display font-extrabold text-3xl text-text-primary mb-8">Users</h1>
+      <h1 className="font-heading text-3xl md:text-4xl tracking-tight text-text-primary mb-8">Users</h1>
 
       <form method="get" action="/admin/users" className="flex gap-3 mb-6">
         <input name="q" defaultValue={q} placeholder="Search by name or phone…"
