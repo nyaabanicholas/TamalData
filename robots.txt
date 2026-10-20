@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: 
+
+Sitemap: https://tamaldata.com/sitemap.xml
